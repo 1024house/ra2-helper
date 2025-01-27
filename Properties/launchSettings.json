@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Ra2Helper (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Ra2Helper (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
