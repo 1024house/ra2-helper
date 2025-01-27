@@ -53,6 +53,11 @@ namespace Ra2Helper
                 myButton.Content = "Not the Red Alert 2 folder, sir!";
                 return;
             }
+            if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
+            {
+                myButton.Content = "Unsupported INI file, sir!";
+                return;
+            }
         }
     }
 }
