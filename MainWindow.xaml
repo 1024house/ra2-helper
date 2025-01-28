@@ -9,8 +9,8 @@
     mc:Ignorable="d"
     Title="Ra2Helper">
 
-    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <StackPanel x:Name="myStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
         <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-        <Button x:Name="myButton2" Click="selectFolder_Click">Select Ra2 folder</Button>
+        <Button x:Name="myButton2" Click="SelectFolder_Click">Select Ra2 folder</Button>
     </StackPanel>
 </Window>

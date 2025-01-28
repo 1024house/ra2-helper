@@ -1,6 +1,10 @@
 using System;
+using System.ComponentModel;
+using System.Xml.Linq;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Controls;
 using WinRT.Interop;
+using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -25,7 +29,7 @@ namespace Ra2Helper
         /*
          * click button to select a folder
          */
-        private void selectFolder_Click(object sender, RoutedEventArgs e)
+        private void SelectFolder_Click(object sender, RoutedEventArgs e)
         {
             // Create a FileOpenPicker
             Windows.Storage.Pickers.FolderPicker folderPicker = new Windows.Storage.Pickers.FolderPicker();
@@ -57,6 +61,78 @@ namespace Ra2Helper
             {
                 myButton.Content = "Unsupported INI file, sir!";
                 return;
+            }
+
+            // < TextBox x: Name = "myTextBox" Width = "200" Height = "30" Text = "1920x1080" />
+            TextBox textBox = new TextBox();
+            textBox.Name = "myTextBox";
+            textBox.Text = "1920x1080";
+            myStackPanel.Children.Add(textBox);
+
+            Button addButton = new Button();
+            addButton.Content = "Add Resolution";
+            addButton.Click += AddResolution_Click;
+            myStackPanel.Children.Add(addButton);
+        }
+
+        /**
+         * click button to read resolution from myTextBox and write to DDrawCompat.ini
+         */
+        private async void AddResolution_Click(object sender, RoutedEventArgs e)
+        {
+            // Get the folder
+            Windows.Storage.StorageFolder folder = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFolderAsync("PickedFolderToken").GetAwaiter().GetResult();
+            if (folder == null)
+            {
+                myButton.Content = "Operation cancelled.";
+                return;
+            }
+            // Get the file
+            if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
+            {
+                myButton.Content = "Unsupported INI file, sir!";
+                return;
+            }
+            Windows.Storage.StorageFile file = folder.GetFileAsync("DDrawCompat.ini").GetAwaiter().GetResult();
+            // get value from dynamic element myTextBox
+            TextBox myTextBox = (TextBox)myStackPanel.FindName("myTextBox");
+            String resolution = myTextBox.Text;
+            if (resolution.Trim() == "")
+            {
+                myButton.Content = "Resolution is empty.";
+                return;
+            }
+            // parse DDrawCompat.ini, find value by the key SupportedResolutions, if resolution not exists in the value, add it.
+            String[] lines = System.IO.File.ReadAllLines(file.Path);
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (lines[i].StartsWith("SupportedResolutions"))
+                {
+                    String[] resolutions = lines[i].Split('=')[1].Split(',');
+                    for (int j = 0; j < resolutions.Length; j++)
+                    {
+                        if (resolutions[j].Trim().Equals(resolution))
+                        {
+                            myButton.Content = "Resolution already exists.";
+                            return;
+                        }
+                    }
+                    lines[i] = lines[i] + ", " + resolution;
+                    break;
+                }
+            }
+
+            // Write lines to the file
+            Windows.Storage.CachedFileManager.DeferUpdates(file);
+            System.IO.File.WriteAllLines(file.Path, lines);
+            Windows.Storage.Provider.FileUpdateStatus status = Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file).GetAwaiter().GetResult();
+            if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
+            {
+                myButton.Content = "Resolution added.";
+            }
+            else
+            {
+                myButton.Content = "Resolution not added.";
             }
         }
     }
