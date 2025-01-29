@@ -9,8 +9,15 @@
     mc:Ignorable="d"
     Title="Ra2Helper">
 
-    <StackPanel x:Name="myStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-        <Button x:Name="myButton2" Click="SelectFolder_Click">Select Ra2 folder</Button>
-    </StackPanel>
+    <Grid>
+        <!-- 背景图片 -->
+        <Grid.Background>
+            <ImageBrush ImageSource="Assets/Background.png" Stretch="UniformToFill"/>
+        </Grid.Background>
+
+        <StackPanel x:Name="myStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
+            <Button x:Name="myButton2" Click="SelectFolder_Click">Select Ra2 folder</Button>
+        </StackPanel>
+    </Grid>
 </Window>

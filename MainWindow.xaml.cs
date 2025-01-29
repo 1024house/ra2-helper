@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Xml.Linq;
+using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinRT.Interop;
@@ -54,16 +55,15 @@ namespace Ra2Helper
             // if game.exe and gamemd.exe not in the folder, show error message
             if (!System.IO.File.Exists(folder.Path + "\\game.exe") && !System.IO.File.Exists(folder.Path + "\\gamemd.exe"))
             {
-                myButton.Content = "Not the Red Alert 2 folder, sir!";
+                myButton.Content = "Invalid directory! This is not the Red Alert 2 command center!";
                 return;
             }
             if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
             {
-                myButton.Content = "Unsupported INI file, sir!";
+                myButton.Content = "Unsupported INI file";
                 return;
             }
 
-            // < TextBox x: Name = "myTextBox" Width = "200" Height = "30" Text = "1920x1080" />
             TextBox textBox = new TextBox();
             textBox.Name = "myTextBox";
             textBox.Text = "1920x1080";
