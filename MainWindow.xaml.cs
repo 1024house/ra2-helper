@@ -20,6 +20,20 @@ namespace Ra2Helper
         public MainWindow()
         {
             this.InitializeComponent();
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
+            var appWindow = AppWindow.GetFromWindowId(windowId);
+
+            var size = new Windows.Graphics.SizeInt32(800, 600);
+            appWindow.Resize(size);
+
+            var presenter = appWindow.Presenter as OverlappedPresenter;
+            if (presenter != null)
+            {
+                presenter.IsResizable = false;
+                presenter.IsMaximizable = false;
+            }
         }
 
         private void myButton_Click(object sender, RoutedEventArgs e)
