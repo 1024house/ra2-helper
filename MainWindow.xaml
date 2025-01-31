@@ -9,15 +9,30 @@
     mc:Ignorable="d"
     Title="Ra2Helper">
 
-    <Grid>
-        <!-- 背景图片 -->
+    <Grid x:Name="myGrid">
         <Grid.Background>
             <ImageBrush ImageSource="Assets/Background.png" Stretch="UniformToFill"/>
         </Grid.Background>
 
-        <StackPanel x:Name="myStackPanel" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="168" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel x:Name="leftStackPanel" Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
             <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
-            <Button x:Name="myButton2" Click="SelectFolder_Click">Select Ra2 folder</Button>
+        </StackPanel>
+
+        <StackPanel x:Name="myStackPanel" Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Center">
+            <Button Width="145" Height="42" Click="SelectFolder_Click" Content="Select Ra2" FontSize="15">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/nav_bkg.jpg" />
+                </Button.Background>
+                <Button.Foreground>
+                    <SolidColorBrush Color="#FFFF00"/>
+                </Button.Foreground>
+            </Button>
+
         </StackPanel>
     </Grid>
 </Window>
