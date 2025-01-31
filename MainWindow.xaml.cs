@@ -36,11 +36,6 @@ namespace Ra2Helper
             }
         }
 
-        private void myButton_Click(object sender, RoutedEventArgs e)
-        {
-            myButton.Content = "Clicked";
-        }
-
         /*
          * click button to select a folder
          */
@@ -59,22 +54,22 @@ namespace Ra2Helper
             Windows.Storage.StorageFolder folder = folderPicker.PickSingleFolderAsync().GetAwaiter().GetResult();
             if (folder == null)
             {
-                myButton.Content = "Operation cancelled.";
+                notice.Text = "Operation cancelled.";
                 return;
             }
             // Application now has read/write access to all contents in the picked folder
             // (including other sub-folder contents)
             Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-            myButton.Content = folder.Path;
+            notice.Text = folder.Path;
             // if game.exe and gamemd.exe not in the folder, show error message
             if (!System.IO.File.Exists(folder.Path + "\\game.exe") && !System.IO.File.Exists(folder.Path + "\\gamemd.exe"))
             {
-                myButton.Content = "Invalid directory! This is not the Red Alert 2 command center!";
+                notice.Text = "Invalid directory! This is not the Red Alert 2 command center!";
                 return;
             }
             if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
             {
-                myButton.Content = "Unsupported INI file";
+                notice.Text = "Unsupported INI file";
                 return;
             }
 
@@ -98,13 +93,13 @@ namespace Ra2Helper
             Windows.Storage.StorageFolder folder = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFolderAsync("PickedFolderToken").GetAwaiter().GetResult();
             if (folder == null)
             {
-                myButton.Content = "Operation cancelled.";
+                notice.Text = "Operation cancelled.";
                 return;
             }
             // Get the file
             if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
             {
-                myButton.Content = "Unsupported INI file, sir!";
+                notice.Text = "Unsupported INI file, sir!";
                 return;
             }
             Windows.Storage.StorageFile file = folder.GetFileAsync("DDrawCompat.ini").GetAwaiter().GetResult();
@@ -113,7 +108,7 @@ namespace Ra2Helper
             String resolution = myTextBox.Text;
             if (resolution.Trim() == "")
             {
-                myButton.Content = "Resolution is empty.";
+                notice.Text = "Resolution is empty.";
                 return;
             }
             // parse DDrawCompat.ini, find value by the key SupportedResolutions, if resolution not exists in the value, add it.
@@ -127,7 +122,7 @@ namespace Ra2Helper
                     {
                         if (resolutions[j].Trim().Equals(resolution))
                         {
-                            myButton.Content = "Resolution already exists.";
+                            notice.Text = "Resolution already exists.";
                             return;
                         }
                     }
@@ -142,11 +137,11 @@ namespace Ra2Helper
             Windows.Storage.Provider.FileUpdateStatus status = Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file).GetAwaiter().GetResult();
             if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
             {
-                myButton.Content = "Resolution added.";
+                notice.Text = "Resolution added.";
             }
             else
             {
-                myButton.Content = "Resolution not added.";
+                notice.Text = "Resolution not added.";
             }
         }
     }

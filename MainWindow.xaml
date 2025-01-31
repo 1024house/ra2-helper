@@ -20,7 +20,7 @@
         </Grid.ColumnDefinitions>
 
         <StackPanel x:Name="leftStackPanel" Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left">
-            <Button x:Name="myButton" Click="myButton_Click">Click Me</Button>
+            <TextBlock x:Name="notice" Foreground="#FFFF00" />
         </StackPanel>
 
         <StackPanel x:Name="myStackPanel" Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Center">
