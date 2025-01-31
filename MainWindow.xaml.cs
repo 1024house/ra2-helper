@@ -21,6 +21,9 @@ namespace Ra2Helper
         {
             this.InitializeComponent();
 
+            this.ExtendsContentIntoTitleBar = true;
+            this.SetTitleBar(null);
+
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
             var appWindow = AppWindow.GetFromWindowId(windowId);
