@@ -15,6 +15,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using static PInvoke.User32;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -42,7 +43,32 @@ namespace Ra2Helper
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
             m_window = new MainWindow();
+
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(m_window);
+
+            SetWindowDetails(hwnd, 800, 600);
+
             m_window.Activate();
+        }
+
+        // ...
+
+        private static void SetWindowDetails(IntPtr hwnd, int width, int height)
+        {
+            var dpi = GetDpiForWindow(hwnd);
+            float scalingFactor = (float)dpi / 96;
+            width = (int)(width * scalingFactor);
+            height = (int)(height * scalingFactor);
+
+            _ = SetWindowPos(hwnd, SpecialWindowHandles.HWND_TOP,
+                                        0, 0, width, height,
+                                        SetWindowPosFlags.SWP_NOMOVE);
+            _ = SetWindowLong(hwnd,
+                   WindowLongIndexFlags.GWL_STYLE,
+                   (SetWindowLongFlags)(GetWindowLong(hwnd,
+                      WindowLongIndexFlags.GWL_STYLE) &
+                      ~(int)SetWindowLongFlags.WS_MINIMIZEBOX &
+                      ~(int)SetWindowLongFlags.WS_MAXIMIZEBOX));
         }
 
         private Window? m_window;

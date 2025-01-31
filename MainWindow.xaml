@@ -24,7 +24,7 @@
         </StackPanel>
 
         <StackPanel x:Name="myStackPanel" Orientation="Vertical" Grid.Column="1" HorizontalAlignment="Center">
-            <Button Width="145" Height="42" Click="SelectFolder_Click" Content="Select Ra2" FontSize="15">
+            <Button Width="145" Height="42" Click="SelectFolder_Click" Content="Select Ra2" FontSize="15" Margin="5,177,0,0">
                 <Button.Background>
                     <ImageBrush ImageSource="ms-appx:///Assets/nav_bkg.jpg" />
                 </Button.Background>
