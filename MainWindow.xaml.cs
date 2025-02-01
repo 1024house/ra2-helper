@@ -32,6 +32,7 @@ namespace Ra2Helper
             {
                 presenter.IsResizable = false;
                 presenter.IsMaximizable = false;
+                presenter.SetBorderAndTitleBar(false, false);
             }
         }
 
@@ -142,6 +143,11 @@ namespace Ra2Helper
             {
                 notice.Text = "Resolution not added.";
             }
+        }
+
+        private void Close_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

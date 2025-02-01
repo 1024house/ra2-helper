@@ -32,6 +32,15 @@
                     <SolidColorBrush Color="#FFFF00"/>
                 </Button.Foreground>
             </Button>
+
+            <Button Width="155" Height="42" Click="Close_Click" Content="Exit" FontSize="15" Margin="13,296,0,0">
+                <Button.Background>
+                    <ImageBrush ImageSource="ms-appx:///Assets/nav_bkg.jpg" />
+                </Button.Background>
+                <Button.Foreground>
+                    <SolidColorBrush Color="#FFFF00"/>
+                </Button.Foreground>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>
