@@ -5,7 +5,6 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinRT.Interop;
-using static System.Net.Mime.MediaTypeNames;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -27,9 +26,6 @@ namespace Ra2Helper
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
             var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
             var appWindow = AppWindow.GetFromWindowId(windowId);
-
-            var size = new Windows.Graphics.SizeInt32(800, 600);
-            appWindow.Resize(size);
 
             var presenter = appWindow.Presenter as OverlappedPresenter;
             if (presenter != null)
@@ -90,7 +86,7 @@ namespace Ra2Helper
         /**
          * click button to read resolution from myTextBox and write to DDrawCompat.ini
          */
-        private async void AddResolution_Click(object sender, RoutedEventArgs e)
+        private void AddResolution_Click(object sender, RoutedEventArgs e)
         {
             // Get the folder
             Windows.Storage.StorageFolder folder = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFolderAsync("PickedFolderToken").GetAwaiter().GetResult();

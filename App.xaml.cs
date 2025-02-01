@@ -46,7 +46,7 @@ namespace Ra2Helper
 
             var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(m_window);
 
-            SetWindowDetails(hwnd, 800, 600);
+            SetWindowDetails(hwnd, 814, 607);
 
             m_window.Activate();
         }
