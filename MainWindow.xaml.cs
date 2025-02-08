@@ -31,7 +31,6 @@ namespace Ra2Helper
             while (EnumDisplaySettings(null, i, ref vDevMode))
             {
                 var resolution = $"{vDevMode.dmPelsWidth}x{vDevMode.dmPelsHeight}";
-                Debug.WriteLine(resolution);
                 if (!systemResolutions.Contains(resolution))
                 {
                     systemResolutions.Add(resolution);
@@ -70,6 +69,7 @@ namespace Ra2Helper
             }
             Notice.Message = gameDir;
             Notice.Severity = InfoBarSeverity.Success;
+            Resolutions.SelectedItem = null;
             Resolutions.IsEnabled = true;
             Resolutions.BorderBrush = new SolidColorBrush(Colors.Green);
         }
@@ -126,11 +126,8 @@ namespace Ra2Helper
 
         }
 
-
         private void Resolutions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Debug.Print("Resolutions_SelectionChanged");
-            Debug.Print(Resolutions.SelectedItem.ToString());
             if (Resolutions.SelectedItem == null)
             {
                 return;
