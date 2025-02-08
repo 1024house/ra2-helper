@@ -52,22 +52,23 @@ namespace Ra2Helper
             var folder = folderPicker.PickSingleFolderAsync().GetAwaiter().GetResult();
             if (folder == null)
             {
-                notice.Message = "Operation cancelled.";
+                Notice.Message = "Operation cancelled.";
                 return;
             }
             Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-            notice.Message = folder.Path;
+            Notice.Message = folder.Path;
             if (!System.IO.File.Exists(folder.Path + "\\game.exe") && !System.IO.File.Exists(folder.Path + "\\gamemd.exe"))
             {
-                notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
+                Notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
                 return;
             }
             if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
             {
-                notice.Message = "Unsupported INI file";
+                Notice.Message = "Unsupported INI file";
                 return;
             }
             gameDir = folder.Path;
+            Resolutions.IsEnabled = true;
         }
 
         [DllImport("user32.dll")]
