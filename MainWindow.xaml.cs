@@ -22,6 +22,7 @@ namespace Ra2Helper
         public MainWindow()
         {
             InitializeComponent();
+            this.AppWindow.SetIcon("App.ico");
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 720 });
 
