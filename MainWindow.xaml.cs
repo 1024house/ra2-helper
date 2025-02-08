@@ -38,36 +38,32 @@ namespace Ra2Helper
             Resolutions.ItemsSource = systemResolutions;
         }
 
-        private void SelectFolder_Click(object sender, RoutedEventArgs e)
+        private void SelectGame_Click(object sender, RoutedEventArgs e)
         {
-            var folderPicker = new Windows.Storage.Pickers.FolderPicker
+            // select file game.exe
+            var openPicker = new Windows.Storage.Pickers.FileOpenPicker
             {
                 SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder
             };
-            folderPicker.FileTypeFilter.Add("*");
+            openPicker.FileTypeFilter.Add(".exe");
 
             var hwnd = WindowNative.GetWindowHandle(this);
-            InitializeWithWindow.Initialize(folderPicker, hwnd);
+            InitializeWithWindow.Initialize(openPicker, hwnd);
 
-            var folder = folderPicker.PickSingleFolderAsync().GetAwaiter().GetResult();
-            if (folder == null)
+            var file = openPicker.PickSingleFileAsync().GetAwaiter().GetResult();
+            if (file == null)
             {
                 Notice.Message = "Operation cancelled.";
+                Resolutions.IsEnabled = false;
                 return;
             }
-            Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-            Notice.Message = folder.Path;
-            if (!System.IO.File.Exists(folder.Path + "\\game.exe") && !System.IO.File.Exists(folder.Path + "\\gamemd.exe"))
+            gameDir = System.IO.Path.GetDirectoryName(file.Path);
+            if (!System.IO.File.Exists(gameDir + "\\game.exe") && !System.IO.File.Exists(gameDir + "\\gamemd.exe"))
             {
                 Notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
                 return;
             }
-            if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
-            {
-                Notice.Message = "Unsupported INI file";
-                return;
-            }
-            gameDir = folder.Path;
+            Notice.Message = gameDir;
             Resolutions.IsEnabled = true;
         }
 
@@ -154,9 +150,15 @@ namespace Ra2Helper
             }
         }
 
+        /**
+         * step 1: Add resolution to DDrawCompat.ini file
+         */
         private void SetResolutionToDDrawCompatIniFile(string resolution)
         {
-            // step 1: add resolution to DDrawCompat.ini
+            if (!System.IO.File.Exists(gameDir + "\\DDrawCompat.ini"))
+            {
+                return;
+            }
             var file = new IniFile();
             var iniPath = gameDir + "\\DDrawCompat.ini";
             file.Load(iniPath);
