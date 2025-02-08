@@ -42,7 +42,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.6.250108002" />
-    <PackageReference Include="PInvoke.User32" Version="0.7.124" />
     <PackageReference Include="SoftCircuits.IniFileParser" Version="2.7.0" />
   </ItemGroup>
 
