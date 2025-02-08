@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using SoftCircuits.IniFileParser;
 using WinRT.Interop;
 
@@ -68,6 +70,7 @@ namespace Ra2Helper
             Notice.Message = gameDir;
             Notice.Severity = InfoBarSeverity.Success;
             Resolutions.IsEnabled = true;
+            Resolutions.BorderBrush = new SolidColorBrush(Colors.Green);
         }
 
         [DllImport("user32.dll")]
