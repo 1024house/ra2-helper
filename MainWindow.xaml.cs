@@ -1,9 +1,11 @@
 using System;
-using System.ComponentModel;
-using System.Xml.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using SoftCircuits.IniFileParser;
 using WinRT.Interop;
 
 // To learn more about WinUI, the WinUI project structure,
@@ -11,143 +13,169 @@ using WinRT.Interop;
 
 namespace Ra2Helper
 {
-    /// <summary>
-    /// An empty window that can be used on its own or navigated to within a Frame.
-    /// </summary>
     public sealed partial class MainWindow : Window
     {
+        private string gameDir;
+        private readonly List<string> systemResolutions = new();
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+            AppWindow.SetPresenter(AppWindowPresenterKind.Default);
+            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1024, Height = 768 });
 
-            this.ExtendsContentIntoTitleBar = true;
-            this.SetTitleBar(null);
-
-            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-            var windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hwnd);
-            var appWindow = AppWindow.GetFromWindowId(windowId);
-
-            var presenter = appWindow.Presenter as OverlappedPresenter;
-            if (presenter != null)
+            var vDevMode = new DEVMODE();
+            var i = 0;
+            while (EnumDisplaySettings(null, i, ref vDevMode))
             {
-                presenter.IsResizable = false;
-                presenter.IsMaximizable = false;
-                presenter.SetBorderAndTitleBar(false, false);
+                var resolution = $"{vDevMode.dmPelsWidth}x{vDevMode.dmPelsHeight}";
+                Debug.WriteLine(resolution);
+                if (!systemResolutions.Contains(resolution))
+                {
+                    systemResolutions.Add(resolution);
+                }
+                i++;
             }
+            Resolutions.ItemsSource = systemResolutions;
         }
 
-        /*
-         * click button to select a folder
-         */
         private void SelectFolder_Click(object sender, RoutedEventArgs e)
         {
-            // Create a FileOpenPicker
-            Windows.Storage.Pickers.FolderPicker folderPicker = new Windows.Storage.Pickers.FolderPicker();
-            folderPicker.SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder;
+            var folderPicker = new Windows.Storage.Pickers.FolderPicker
+            {
+                SuggestedStartLocation = Windows.Storage.Pickers.PickerLocationId.ComputerFolder
+            };
             folderPicker.FileTypeFilter.Add("*");
 
-            // Initialize with window handle
-            IntPtr hwnd = WindowNative.GetWindowHandle(this);
+            var hwnd = WindowNative.GetWindowHandle(this);
             InitializeWithWindow.Initialize(folderPicker, hwnd);
 
-            // Show the picker
-            Windows.Storage.StorageFolder folder = folderPicker.PickSingleFolderAsync().GetAwaiter().GetResult();
+            var folder = folderPicker.PickSingleFolderAsync().GetAwaiter().GetResult();
             if (folder == null)
             {
-                notice.Text = "Operation cancelled.";
+                notice.Message = "Operation cancelled.";
                 return;
             }
-            // Application now has read/write access to all contents in the picked folder
-            // (including other sub-folder contents)
             Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.AddOrReplace("PickedFolderToken", folder);
-            notice.Text = folder.Path;
-            // if game.exe and gamemd.exe not in the folder, show error message
+            notice.Message = folder.Path;
             if (!System.IO.File.Exists(folder.Path + "\\game.exe") && !System.IO.File.Exists(folder.Path + "\\gamemd.exe"))
             {
-                notice.Text = "Invalid directory! This is not the Red Alert 2 command center!";
+                notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
                 return;
             }
             if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
             {
-                notice.Text = "Unsupported INI file";
+                notice.Message = "Unsupported INI file";
                 return;
             }
-
-            TextBox textBox = new TextBox();
-            textBox.Name = "myTextBox";
-            textBox.Text = "1920x1080";
-            myStackPanel.Children.Add(textBox);
-
-            Button addButton = new Button();
-            addButton.Content = "Add Resolution";
-            addButton.Click += AddResolution_Click;
-            myStackPanel.Children.Add(addButton);
+            gameDir = folder.Path;
         }
 
-        /**
-         * click button to read resolution from myTextBox and write to DDrawCompat.ini
-         */
-        private void AddResolution_Click(object sender, RoutedEventArgs e)
-        {
-            // Get the folder
-            Windows.Storage.StorageFolder folder = Windows.Storage.AccessCache.StorageApplicationPermissions.FutureAccessList.GetFolderAsync("PickedFolderToken").GetAwaiter().GetResult();
-            if (folder == null)
-            {
-                notice.Text = "Operation cancelled.";
-                return;
-            }
-            // Get the file
-            if (!System.IO.File.Exists(folder.Path + "\\DDrawCompat.ini"))
-            {
-                notice.Text = "Unsupported INI file, sir!";
-                return;
-            }
-            Windows.Storage.StorageFile file = folder.GetFileAsync("DDrawCompat.ini").GetAwaiter().GetResult();
-            // get value from dynamic element myTextBox
-            TextBox myTextBox = (TextBox)myStackPanel.FindName("myTextBox");
-            String resolution = myTextBox.Text;
-            if (resolution.Trim() == "")
-            {
-                notice.Text = "Resolution is empty.";
-                return;
-            }
-            // parse DDrawCompat.ini, find value by the key SupportedResolutions, if resolution not exists in the value, add it.
-            String[] lines = System.IO.File.ReadAllLines(file.Path);
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (lines[i].StartsWith("SupportedResolutions"))
-                {
-                    String[] resolutions = lines[i].Split('=')[1].Split(',');
-                    for (int j = 0; j < resolutions.Length; j++)
-                    {
-                        if (resolutions[j].Trim().Equals(resolution))
-                        {
-                            notice.Text = "Resolution already exists.";
-                            return;
-                        }
-                    }
-                    lines[i] = lines[i] + ", " + resolution;
-                    break;
-                }
-            }
+        [DllImport("user32.dll")]
+        public static extern bool EnumDisplaySettings(
+                 string deviceName, int modeNum, ref DEVMODE devMode);
 
-            // Write lines to the file
-            Windows.Storage.CachedFileManager.DeferUpdates(file);
-            System.IO.File.WriteAllLines(file.Path, lines);
-            Windows.Storage.Provider.FileUpdateStatus status = Windows.Storage.CachedFileManager.CompleteUpdatesAsync(file).GetAwaiter().GetResult();
-            if (status == Windows.Storage.Provider.FileUpdateStatus.Complete)
+        public enum ScreenOrientation : int
+        {
+            DMDO_DEFAULT = 0,
+            DMDO_90 = 1,
+            DMDO_180 = 2,
+            DMDO_270 = 3
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct DEVMODE
+        {
+            private const int CCHDEVICENAME = 0x20;
+            private const int CCHFORMNAME = 0x20;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
+            public string dmDeviceName;
+            public short dmSpecVersion;
+            public short dmDriverVersion;
+            public short dmSize;
+            public short dmDriverExtra;
+            public int dmFields;
+            public int dmPositionX;
+            public int dmPositionY;
+            public ScreenOrientation dmDisplayOrientation;
+            public int dmDisplayFixedOutput;
+            public short dmColor;
+            public short dmDuplex;
+            public short dmYResolution;
+            public short dmTTOption;
+            public short dmCollate;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 0x20)]
+            public string dmFormName;
+            public short dmLogPixels;
+            public int dmBitsPerPel;
+            public int dmPelsWidth;
+            public int dmPelsHeight;
+            public int dmDisplayFlags;
+            public int dmDisplayFrequency;
+            public int dmICMMethod;
+            public int dmICMIntent;
+            public int dmMediaType;
+            public int dmDitherType;
+            public int dmReserved1;
+            public int dmReserved2;
+            public int dmPanningWidth;
+            public int dmPanningHeight;
+
+        }
+
+
+        private void Resolutions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Debug.Print("Resolutions_SelectionChanged");
+            Debug.Print(Resolutions.SelectedItem.ToString());
+            if (Resolutions.SelectedItem == null)
             {
-                notice.Text = "Resolution added.";
+                return;
             }
-            else
+            var resolution = Resolutions.SelectedItem.ToString();
+            SetResolutionToDDrawCompatIniFile(resolution);
+            SetResolutionToRa2AndRa2mdIniFile(resolution);
+        }
+
+        private void SetResolutionToRa2AndRa2mdIniFile(string resolution)
+        {
+            // step 2: add AllowHiResModes=yes to ra2.ini and ra2md.ini
+            // step 3: add resolution to ra2.ini and ra2md.ini
+            string[] iniFiles = ["ra2.ini", "ra2md.ini"];
+            var file = new IniFile();
+            foreach (var iniFile in iniFiles)
             {
-                notice.Text = "Resolution not added.";
+                var iniPath2 = gameDir + "\\" + iniFile;
+                file.Load(iniPath2);
+                file.SetSetting("Video", "AllowHiResModes", "yes");
+                file.SetSetting("Video", "ScreenWidth", resolution.Split('x')[0]);
+                file.SetSetting("Video", "ScreenHeight", resolution.Split('x')[1]);
+                file.Save(iniPath2);
             }
         }
 
-        private void Close_Click(object sender, RoutedEventArgs e)
+        private void SetResolutionToDDrawCompatIniFile(string resolution)
         {
-            this.Close();
+            // step 1: add resolution to DDrawCompat.ini
+            var file = new IniFile();
+            var iniPath = gameDir + "\\DDrawCompat.ini";
+            file.Load(iniPath);
+
+            var iniLineSupportedResolutions = file.GetSetting(IniFile.DefaultSectionName, "SupportedResolutions", string.Empty).Trim();
+
+            // if iniLineSupportedResolutions contains resolution, return
+            if (iniLineSupportedResolutions.Contains(resolution))
+            {
+                return;
+            }
+            // if iniLineSupportedResolutions is empty, add resolution to the end of line
+            if (string.IsNullOrEmpty(iniLineSupportedResolutions))
+            {
+                file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", resolution);
+            }
+            // add resolution to the end of line
+            file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", $"{iniLineSupportedResolutions}, {resolution}");
+
+            file.Save(iniPath);
         }
     }
 }
