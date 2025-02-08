@@ -23,7 +23,7 @@ namespace Ra2Helper
         {
             InitializeComponent();
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
-            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1024, Height = 768 });
+            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 720 });
 
             var vDevMode = new DEVMODE();
             var i = 0;
