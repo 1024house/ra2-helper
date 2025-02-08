@@ -54,6 +54,7 @@ namespace Ra2Helper
             if (file == null)
             {
                 Notice.Message = "Operation cancelled.";
+                Notice.Severity = InfoBarSeverity.Warning;
                 Resolutions.IsEnabled = false;
                 return;
             }
@@ -61,9 +62,11 @@ namespace Ra2Helper
             if (!System.IO.File.Exists(gameDir + "\\game.exe") && !System.IO.File.Exists(gameDir + "\\gamemd.exe"))
             {
                 Notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
+                Notice.Severity = InfoBarSeverity.Error;
                 return;
             }
             Notice.Message = gameDir;
+            Notice.Severity = InfoBarSeverity.Success;
             Resolutions.IsEnabled = true;
         }
 
