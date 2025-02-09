@@ -59,7 +59,7 @@ namespace Ra2Helper
             {
                 Notice.Message = "Operation cancelled.";
                 Notice.Severity = InfoBarSeverity.Warning;
-                Resolutions.IsEnabled = false;
+                EnableDisableGridElements(Features, false);
                 return;
             }
             gameDir = System.IO.Path.GetDirectoryName(file.Path);
@@ -67,12 +67,13 @@ namespace Ra2Helper
             {
                 Notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
                 Notice.Severity = InfoBarSeverity.Error;
+                EnableDisableGridElements(Features, false);
                 return;
             }
             Notice.Message = gameDir;
             Notice.Severity = InfoBarSeverity.Success;
             Resolutions.SelectedItem = null;
-            Resolutions.IsEnabled = true;
+            EnableDisableGridElements(Features, true);
             Resolutions.BorderBrush = new SolidColorBrush(Colors.Green);
         }
 
@@ -214,6 +215,16 @@ namespace Ra2Helper
                     }
                     string destinationPath = Path.Combine(destinationDirectory, fileName);
                     entry.ExtractToFile(destinationPath, overwrite: true);
+                }
+            }
+        }
+        private void EnableDisableGridElements(Grid grid, Boolean flag)
+        {
+            foreach (var child in grid.Children)
+            {
+                if (child is Control control)
+                {
+                    control.IsEnabled = flag;
                 }
             }
         }
