@@ -12,8 +12,12 @@
     <Grid RowDefinitions ="Auto, Auto, *">
         <InfoBar x:Name="Notice" IsOpen="True" IsClosable="False" Severity="Informational"
                  Message="Commander, where is our Red Alert 2 command center?" Grid.Row="0" />
-        <Button Click="SelectGame_Click" Content="Select game.exe" Grid.Row="1" HorizontalAlignment="Center" Margin="30"
-                Style="{StaticResource AccentButtonStyle}" />
+        <Grid x:Name="Prepare" Grid.Row="1" Margin="20">
+            <Button Click="SelectGame_Click" Content="Select game.exe" HorizontalAlignment="Left"
+                Background="#0078d4" Foreground="White" />
+            <Button Click="FixPermission_Click" Content="Fix permission" HorizontalAlignment="Right"
+     Background="#c42b1c" Foreground="White" x:Name="FixPermission" Visibility="Collapsed" />
+        </Grid>
         <Grid x:Name="Features" Grid.Row="2" RowDefinitions="Auto, Auto, Auto" Margin="30,0">
             <ComboBox x:Name="Resolutions" Header="Resolution" PlaceholderText="Select a resolution"
                       Width="200" SelectionChanged="Resolutions_SelectionChanged"  Grid.Row="0" IsEnabled="False" />

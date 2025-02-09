@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO.Compression;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -11,9 +12,6 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using SoftCircuits.IniFileParser;
 using WinRT.Interop;
-
-// To learn more about WinUI, the WinUI project structure,
-// and more about our project templates, see: http://aka.ms/winui-project-info.
 
 namespace Ra2Helper
 {
@@ -26,7 +24,7 @@ namespace Ra2Helper
             InitializeComponent();
             this.AppWindow.SetIcon("App.ico");
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
-            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 720 });
+            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 800 });
 
             var vDevMode = new DEVMODE();
             var i = 0;
@@ -68,6 +66,14 @@ namespace Ra2Helper
                 Notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
                 Notice.Severity = InfoBarSeverity.Error;
                 EnableDisableGridElements(Features, false);
+                return;
+            }
+            if (!IsDirectoryWritable(gameDir))
+            {
+                Notice.Message = "Terrible publisher! This directory requires administrator privileges!";
+                Notice.Severity = InfoBarSeverity.Error;
+                EnableDisableGridElements(Features, false);
+                FixPermission.Visibility = Visibility.Visible;
                 return;
             }
             Notice.Message = gameDir;
@@ -153,7 +159,7 @@ namespace Ra2Helper
                 file.SetSetting("Video", "AllowHiResModes", "yes");
                 file.SetSetting("Video", "ScreenWidth", resolution.Split('x')[0]);
                 file.SetSetting("Video", "ScreenHeight", resolution.Split('x')[1]);
-                SaveFileUac(iniPath2, file.ToString());
+                file.Save(iniPath2);
             }
         }
 
@@ -185,7 +191,7 @@ namespace Ra2Helper
             // add resolution to the end of line
             file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", $"{iniLineSupportedResolutions}, {resolution}");
 
-            SaveFileUac(iniPath, file.ToString());
+            file.Save(iniPath);
         }
 
         // click button to fix lan battle program by unzip ipxwrapper.zip from Assets dir to game directory
@@ -228,39 +234,62 @@ namespace Ra2Helper
                 }
             }
         }
-        static void SaveFileUac(string filePath, string content)
+
+        static bool IsDirectoryWritable(string directoryPath)
         {
             try
             {
-                File.WriteAllText(filePath, content);
+                File.WriteAllText(Path.Combine(directoryPath, "Ra2Helper.log"), "check directory writable");
+                return true;
             }
             catch (UnauthorizedAccessException)
             {
-                // Create a temporary file to store the content
-                string tempFilePath = Path.GetTempFileName();
-                File.WriteAllText(tempFilePath, content);
-
-                // Launch a new process with admin privileges
-                ProcessStartInfo processInfo = new ProcessStartInfo();
-                processInfo.FileName = Process.GetCurrentProcess().MainModule.FileName;
-                processInfo.Arguments = $"\"{tempFilePath}\" \"{filePath}\"";
-                processInfo.Verb = "runas"; // Request elevation
-                processInfo.UseShellExecute = true;
-
-                try
-                {
-                    Process.Start(processInfo);
-                    Debug.WriteLine("Restarting with admin privileges to save the file.");
-                }
-                catch (System.ComponentModel.Win32Exception)
-                {
-                    Debug.WriteLine("User canceled the UAC prompt or elevation failed.");
-                }
+                return false;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"An error occurred: {ex.Message}");
+                return false; // Other errors
             }
+        }
+
+        private void FixPermission_Click(object sender, RoutedEventArgs e)
+        {
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/c icacls \"{gameDir}\" /grant {WindowsIdentity.GetCurrent().Name}:(OI)(CI)F",
+                UseShellExecute = true,
+                Verb = "runas"
+            };
+
+            var process = new Process
+            {
+                StartInfo = processInfo,
+                EnableRaisingEvents = true
+            };
+
+            process.Exited += (sender, e) =>
+            {
+                // This code will run when the process exits
+                DispatcherQueue.TryEnqueue(() =>
+                {
+                    if (IsDirectoryWritable(gameDir))
+                    {
+                        Notice.Message = "Directory permission fixed!";
+                        Notice.Severity = InfoBarSeverity.Success;
+                        FixPermission.Visibility = Visibility.Collapsed;
+                        EnableDisableGridElements(Features, true);
+                    }
+                    else
+                    {
+                        Notice.Message = "Failed to fix directory permission!";
+                        Notice.Severity = InfoBarSeverity.Error;
+                    }
+                });
+            };
+
+            process.Start();
         }
     }
 }
