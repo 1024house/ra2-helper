@@ -18,14 +18,18 @@ namespace Ra2Helper
     public sealed partial class MainWindow : Window
     {
         private string gameDir;
-        private readonly List<string> systemResolutions = new();
         public MainWindow()
         {
             InitializeComponent();
             this.AppWindow.SetIcon("App.ico");
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 800 });
+            Resolutions.ItemsSource = GetSystemResolutions();
+        }
 
+        private List<string> GetSystemResolutions()
+        {
+            List<string> systemResolutions = new();
             var vDevMode = new DEVMODE();
             var i = 0;
             while (EnumDisplaySettings(null, i, ref vDevMode))
@@ -37,7 +41,7 @@ namespace Ra2Helper
                 }
                 i++;
             }
-            Resolutions.ItemsSource = systemResolutions;
+            return systemResolutions;
         }
 
         private void SelectGame_Click(object sender, RoutedEventArgs e)
