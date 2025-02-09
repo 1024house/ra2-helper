@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Compression;
+using System.IO;
 using System.Runtime.InteropServices;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
@@ -183,6 +185,37 @@ namespace Ra2Helper
             file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", $"{iniLineSupportedResolutions}, {resolution}");
 
             file.Save(iniPath);
+        }
+
+        // click button to fix lan battle program by unzip ipxwrapper.zip from Assets dir to game directory
+        private void FixLanBattle_Click(object sender, RoutedEventArgs e)
+        {
+            var zipPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Assets\\ipxwrapper-0.7.1.zip");
+            UnzipWithoutDirectory(zipPath, gameDir);
+            Notice.Message = "LAN battle fixed by https://github.com/solemnwarning/ipxwrapper";
+            Notice.Severity = InfoBarSeverity.Success;
+            FixLanBattle.IsChecked = true;
+        }
+
+        public void UnzipWithoutDirectory(string zipFilePath, string destinationDirectory)
+        {
+            if (!Directory.Exists(destinationDirectory))
+            {
+                Directory.CreateDirectory(destinationDirectory);
+            }
+            using (ZipArchive archive = ZipFile.OpenRead(zipFilePath))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    string fileName = Path.GetFileName(entry.FullName);
+                    if (string.IsNullOrEmpty(fileName))
+                    {
+                        continue;
+                    }
+                    string destinationPath = Path.Combine(destinationDirectory, fileName);
+                    entry.ExtractToFile(destinationPath, overwrite: true);
+                }
+            }
         }
     }
 }
