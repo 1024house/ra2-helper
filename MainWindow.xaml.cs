@@ -37,7 +37,7 @@ namespace Ra2Helper
                 var resolution = $"{vDevMode.dmPelsWidth}x{vDevMode.dmPelsHeight}";
                 if (!systemResolutions.Contains(resolution))
                 {
-                    systemResolutions.Add(resolution);
+                    systemResolutions.Insert(0, resolution);
                 }
                 i++;
             }
