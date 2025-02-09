@@ -153,7 +153,7 @@ namespace Ra2Helper
                 file.SetSetting("Video", "AllowHiResModes", "yes");
                 file.SetSetting("Video", "ScreenWidth", resolution.Split('x')[0]);
                 file.SetSetting("Video", "ScreenHeight", resolution.Split('x')[1]);
-                file.Save(iniPath2);
+                SaveFileUac(iniPath2, file.ToString());
             }
         }
 
@@ -185,7 +185,7 @@ namespace Ra2Helper
             // add resolution to the end of line
             file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", $"{iniLineSupportedResolutions}, {resolution}");
 
-            file.Save(iniPath);
+            SaveFileUac(iniPath, file.ToString());
         }
 
         // click button to fix lan battle program by unzip ipxwrapper.zip from Assets dir to game directory
@@ -226,6 +226,40 @@ namespace Ra2Helper
                 {
                     control.IsEnabled = flag;
                 }
+            }
+        }
+        static void SaveFileUac(string filePath, string content)
+        {
+            try
+            {
+                File.WriteAllText(filePath, content);
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Create a temporary file to store the content
+                string tempFilePath = Path.GetTempFileName();
+                File.WriteAllText(tempFilePath, content);
+
+                // Launch a new process with admin privileges
+                ProcessStartInfo processInfo = new ProcessStartInfo();
+                processInfo.FileName = Process.GetCurrentProcess().MainModule.FileName;
+                processInfo.Arguments = $"\"{tempFilePath}\" \"{filePath}\"";
+                processInfo.Verb = "runas"; // Request elevation
+                processInfo.UseShellExecute = true;
+
+                try
+                {
+                    Process.Start(processInfo);
+                    Debug.WriteLine("Restarting with admin privileges to save the file.");
+                }
+                catch (System.ComponentModel.Win32Exception)
+                {
+                    Debug.WriteLine("User canceled the UAC prompt or elevation failed.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"An error occurred: {ex.Message}");
             }
         }
     }
