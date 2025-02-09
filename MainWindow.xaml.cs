@@ -169,33 +169,30 @@ namespace Ra2Helper
 
         /**
          * step 1: Add resolution to DDrawCompat.ini file
+         * DDrawCompat.ini have no section, it's not a standard ini file, fu*k!
+         * so we can't use library but read and write file directly
          */
         private void SetResolutionToDDrawCompatIniFile(string resolution)
         {
-            if (!System.IO.File.Exists(gameDir + "\\DDrawCompat.ini"))
+            var iniFile = gameDir + "\\DDrawCompat.ini";
+            if (!File.Exists(iniFile))
             {
                 return;
             }
-            var file = new IniFile();
-            var iniPath = gameDir + "\\DDrawCompat.ini";
-            file.Load(iniPath);
-
-            var iniLineSupportedResolutions = file.GetSetting(IniFile.DefaultSectionName, "SupportedResolutions", string.Empty).Trim();
-
-            // if iniLineSupportedResolutions contains resolution, return
-            if (iniLineSupportedResolutions.Contains(resolution))
+            var lines = File.ReadAllLines(iniFile);
+            for (var i = 0; i < lines.Length; i++)
             {
-                return;
+                if (lines[i].StartsWith("SupportedResolutions"))
+                {
+                    if (lines[i].Contains(resolution))
+                    {
+                        return;
+                    }
+                    lines[i] = lines[i] + ", " + resolution;
+                    break;
+                }
             }
-            // if iniLineSupportedResolutions is empty, add resolution to the end of line
-            if (string.IsNullOrEmpty(iniLineSupportedResolutions))
-            {
-                file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", resolution);
-            }
-            // add resolution to the end of line
-            file.SetSetting(IniFile.DefaultSectionName, "SupportedResolutions", $"{iniLineSupportedResolutions}, {resolution}");
-
-            file.Save(iniPath);
+            File.WriteAllLines(iniFile, lines);
         }
 
         // click button to fix lan battle program by unzip ipxwrapper.zip from Assets dir to game directory
