@@ -84,6 +84,7 @@ namespace Ra2Helper
             Notice.Severity = InfoBarSeverity.Success;
             Resolutions.SelectedItem = null;
             EnableDisableGridElements(Features, true);
+            CheckPlayIntroVideo();
         }
 
         [DllImport("user32.dll")]
@@ -338,6 +339,30 @@ namespace Ra2Helper
                 file.SetSetting("Intro", "Play", play);
                 file.Save(iniPath2);
             }
+        }
+
+        /**
+         * check PlayIntroVideo is on or off, and set the toggle switch
+         */
+        private void CheckPlayIntroVideo()
+        {
+            string[] iniFiles = ["ra2.ini", "ra2md.ini"];
+            var file = new IniFile();
+            var yesCount = 0;
+            foreach (var iniFile in iniFiles)
+            {
+                var iniPath2 = gameDir + "\\" + iniFile;
+                if (!File.Exists(iniPath2))
+                {
+                    continue;
+                }
+                file.Load(iniPath2);
+                if (file.GetSetting("Intro", "Play") == "yes")
+                {
+                    yesCount++;
+                }
+            }
+            PlayIntroVideo.IsOn = yesCount == 2;
         }
     }
 }
