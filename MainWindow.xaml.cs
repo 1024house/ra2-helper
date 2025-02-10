@@ -156,14 +156,34 @@ namespace Ra2Helper
             // step 3: add resolution to ra2.ini and ra2md.ini
             string[] iniFiles = ["ra2.ini", "ra2md.ini"];
             var file = new IniFile();
+            var successCount = 0;
             foreach (var iniFile in iniFiles)
             {
                 var iniPath2 = gameDir + "\\" + iniFile;
+                if (!File.Exists(iniPath2))
+                {
+                    continue;
+                }
                 file.Load(iniPath2);
                 file.SetSetting("Video", "AllowHiResModes", "yes");
                 file.SetSetting("Video", "ScreenWidth", resolution.Split('x')[0]);
                 file.SetSetting("Video", "ScreenHeight", resolution.Split('x')[1]);
                 file.Save(iniPath2);
+                if (File.ReadAllText(iniPath2).Contains("AllowHiResModes=yes")
+                    && file.GetSetting("Video", "ScreenWidth") == resolution.Split('x')[0])
+                {
+                    successCount++;
+                }
+            }
+            if (successCount > 0)
+            {
+                Notice.Message = "Resolution set to " + resolution;
+                Notice.Severity = InfoBarSeverity.Success;
+            }
+            else
+            {
+                Notice.Message = "Failed to set resolution!";
+                Notice.Severity = InfoBarSeverity.Error;
             }
         }
 
