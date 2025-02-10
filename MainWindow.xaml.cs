@@ -84,7 +84,6 @@ namespace Ra2Helper
             Notice.Severity = InfoBarSeverity.Success;
             Resolutions.SelectedItem = null;
             EnableDisableGridElements(Features, true);
-            Resolutions.BorderBrush = new SolidColorBrush(Colors.Green);
         }
 
         [DllImport("user32.dll")]
@@ -245,10 +244,15 @@ namespace Ra2Helper
                 }
             }
         }
-        private void EnableDisableGridElements(Grid grid, Boolean flag)
+
+        private void EnableDisableGridElements(Panel panel, bool flag)
         {
-            foreach (var child in grid.Children)
+            foreach (var child in panel.Children)
             {
+                if (child is Panel childPanel)
+                {
+                    EnableDisableGridElements(childPanel, flag);
+                }
                 if (child is Control control)
                 {
                     control.IsEnabled = flag;
@@ -311,6 +315,29 @@ namespace Ra2Helper
             };
 
             process.Start();
+        }
+
+        private void PlayIntroVideo_Toggled(object sender, RoutedEventArgs e)
+        {
+            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
+            if (toggleSwitch == null)
+            {
+                return;
+            }
+            var play = toggleSwitch.IsOn ? "yes" : "no";
+            string[] iniFiles = ["ra2.ini", "ra2md.ini"];
+            var file = new IniFile();
+            foreach (var iniFile in iniFiles)
+            {
+                var iniPath2 = gameDir + "\\" + iniFile;
+                if (!File.Exists(iniPath2))
+                {
+                    continue;
+                }
+                file.Load(iniPath2);
+                file.SetSetting("Intro", "Play", play);
+                file.Save(iniPath2);
+            }
         }
     }
 }

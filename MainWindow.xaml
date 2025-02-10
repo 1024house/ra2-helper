@@ -18,11 +18,15 @@
             <Button Click="FixPermission_Click" Content="Fix permission" HorizontalAlignment="Right"
      Background="#c42b1c" Foreground="White" x:Name="FixPermission" Visibility="Collapsed" />
         </Grid>
-        <Grid x:Name="Features" Grid.Row="2" RowDefinitions="Auto, Auto, Auto" Margin="30,0">
-            <ComboBox x:Name="Resolutions" Header="Resolution" PlaceholderText="Select a resolution"
-                      Width="200" SelectionChanged="Resolutions_SelectionChanged"  Grid.Row="0" IsEnabled="False" />
-            <TextBlock Text="Fix" Grid.Row="1" Margin="0,10"/>
-            <ToggleButton x:Name="FixLanBattle" Content="LAN Battle" Click="FixLanBattle_Click" Grid.Row="2" IsEnabled="False" />
+        <Grid x:Name="Features" Grid.Row="2" RowDefinitions="Auto, Auto" Margin="30,0">
+            <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto">
+                <ComboBox x:Name="Resolutions" Header="Resolution" PlaceholderText="Select a resolution"
+                      Width="200" SelectionChanged="Resolutions_SelectionChanged" Grid.Column="0" IsEnabled="False" />
+                <ToggleSwitch Header="Play Intro Video" OffContent="No" OnContent="Yes" IsOn="False" Toggled="PlayIntroVideo_Toggled" Grid.Column="1" Margin="20, 0" IsEnabled="False" />
+            </Grid>
+            <Grid Grid.Row="1" Margin="0,10">
+                <ToggleButton x:Name="FixLanBattle" Content="Fix LAN Battle" Click="FixLanBattle_Click" HorizontalAlignment="Left" IsEnabled="False" />
+            </Grid>
         </Grid>
     </Grid>
 </Window>
