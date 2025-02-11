@@ -5,12 +5,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.InteropServices;
 using System.Security.Principal;
-using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using SoftCircuits.IniFileParser;
+using Windows.ApplicationModel.Resources;
 using WinRT.Interop;
 
 namespace Ra2Helper
@@ -18,6 +17,7 @@ namespace Ra2Helper
     public sealed partial class MainWindow : Window
     {
         private string gameDir;
+        private ResourceLoader resourceLoader;
         public MainWindow()
         {
             InitializeComponent();
@@ -25,6 +25,7 @@ namespace Ra2Helper
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 800 });
             Resolutions.ItemsSource = GetSystemResolutions();
+            resourceLoader = ResourceLoader.GetForViewIndependentUse();
         }
 
         private List<string> GetSystemResolutions()
@@ -59,7 +60,7 @@ namespace Ra2Helper
             var file = openPicker.PickSingleFileAsync().GetAwaiter().GetResult();
             if (file == null)
             {
-                Notice.Message = "Operation cancelled.";
+                Notice.Message = resourceLoader.GetString("GiveMeATarget");
                 Notice.Severity = InfoBarSeverity.Warning;
                 EnableDisableGridElements(Features, false);
                 return;
@@ -67,14 +68,14 @@ namespace Ra2Helper
             gameDir = System.IO.Path.GetDirectoryName(file.Path);
             if (!System.IO.File.Exists(gameDir + "\\game.exe") && !System.IO.File.Exists(gameDir + "\\gamemd.exe"))
             {
-                Notice.Message = "Invalid directory! This is not the Red Alert 2 command center!";
+                Notice.Message = resourceLoader.GetString("InvalidDirectory");
                 Notice.Severity = InfoBarSeverity.Error;
                 EnableDisableGridElements(Features, false);
                 return;
             }
             if (!IsDirectoryWritable(gameDir))
             {
-                Notice.Message = "Terrible publisher! This directory requires administrator privileges!";
+                Notice.Message = resourceLoader.GetString("DirectoryRequiresAdmin");
                 Notice.Severity = InfoBarSeverity.Error;
                 EnableDisableGridElements(Features, false);
                 FixPermission.Visibility = Visibility.Visible;
