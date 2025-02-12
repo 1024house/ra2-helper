@@ -266,7 +266,9 @@ namespace Ra2Helper
         {
             try
             {
+                File.Delete(Path.Combine(directoryPath, "Ra2Helper.log"));
                 File.WriteAllText(Path.Combine(directoryPath, "Ra2Helper.log"), "check directory writable");
+                File.Delete(Path.Combine(directoryPath, "Ra2Helper.log"));
                 return true;
             }
             catch (UnauthorizedAccessException)
