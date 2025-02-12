@@ -68,7 +68,7 @@ namespace Ra2Helper
             gameDir = System.IO.Path.GetDirectoryName(file.Path);
             if (!System.IO.File.Exists(gameDir + "\\game.exe") && !System.IO.File.Exists(gameDir + "\\gamemd.exe"))
             {
-                Notice.Message = resourceLoader.GetString("InvalidDirectory");
+                Notice.Message = resourceLoader.GetString("HowAboutATarget");
                 Notice.Severity = InfoBarSeverity.Error;
                 EnableDisableGridElements(Features, false);
                 return;
@@ -178,12 +178,12 @@ namespace Ra2Helper
             }
             if (successCount > 0)
             {
-                Notice.Message = "Resolution set to " + resolution;
+                Notice.Message = resourceLoader.GetString("VisibilityClear") + resolution;
                 Notice.Severity = InfoBarSeverity.Success;
             }
             else
             {
-                Notice.Message = "Failed to set resolution!";
+                Notice.Message = resourceLoader.GetString("WerePinnedDown");
                 Notice.Severity = InfoBarSeverity.Error;
             }
         }
@@ -221,7 +221,7 @@ namespace Ra2Helper
         {
             var zipPath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Assets\\ipxwrapper-0.7.1.zip");
             UnzipWithoutDirectory(zipPath, gameDir);
-            Notice.Message = "LAN battle fixed by https://github.com/solemnwarning/ipxwrapper";
+            Notice.Message = resourceLoader.GetString("IHaveTheTools") + "https://github.com/solemnwarning/ipxwrapper";
             Notice.Severity = InfoBarSeverity.Success;
             FixLanBattle.IsChecked = true;
         }
@@ -303,14 +303,14 @@ namespace Ra2Helper
                 {
                     if (IsDirectoryWritable(gameDir))
                     {
-                        Notice.Message = "Directory permission fixed!";
+                        Notice.Message = resourceLoader.GetString("HesInMyScope");
                         Notice.Severity = InfoBarSeverity.Success;
                         FixPermission.Visibility = Visibility.Collapsed;
                         EnableDisableGridElements(Features, true);
                     }
                     else
                     {
-                        Notice.Message = "Failed to fix directory permission!";
+                        Notice.Message = resourceLoader.GetString("WerePinnedDown");
                         Notice.Severity = InfoBarSeverity.Error;
                     }
                 });

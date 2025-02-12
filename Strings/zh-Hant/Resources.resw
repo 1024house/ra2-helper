@@ -123,13 +123,22 @@
   <data name="FixLan.Content" xml:space="preserve">
     <value>修復區域網路連線元件</value>
   </data>
-  <data name="FixPermission" xml:space="preserve">
+  <data name="FixPermission.Content" xml:space="preserve">
     <value>修正資料夾權限</value>
   </data>
   <data name="GiveMeATarget" xml:space="preserve">
     <value>給我一個目標！</value>
   </data>
-  <data name="InvalidDirectory" xml:space="preserve">
+  <data name="HesInMyScope" xml:space="preserve">
+    <value>他在我的範圍內。</value>
+  </data>
+  <data name="HowAboutATarget" xml:space="preserve">
+    <value>目標怎麼樣？</value>
+  </data>
+  <data name="IHaveTheTools" xml:space="preserve">
+    <value>我有工具：</value>
+  </data>
+  <data name="ItsTooQuietHere" xml:space="preserve">
     <value>這裡太安靜了。</value>
   </data>
   <data name="PlayIntroVideo.Header" xml:space="preserve">
@@ -139,10 +148,16 @@
     <value>解析度</value>
   </data>
   <data name="Resolutions.PlaceholderText" xml:space="preserve">
-    <value>選擇解析度</value>
+    <value>給我一個清晰的視野</value>
   </data>
   <data name="SelectGame.Content" xml:space="preserve">
-    <value>選擇檔案 game.exe</value>
+    <value>尋找熱點：game.exe</value>
+  </data>
+  <data name="VisibilityClear" xml:space="preserve">
+    <value>視野清晰：</value>
+  </data>
+  <data name="WerePinnedDown" xml:space="preserve">
+    <value>我們被壓制住了！</value>
   </data>
   <data name="WhereIsDir.Message" xml:space="preserve">
     <value>指揮官，我們的紅色警戒2指揮中心在哪裡？</value>

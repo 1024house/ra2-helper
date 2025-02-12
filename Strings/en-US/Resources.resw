@@ -121,15 +121,24 @@
     <value>I need support! This directory requires administrator privileges!</value>
   </data>
   <data name="FixLan.Content" xml:space="preserve">
-    <value>Fix LAN Battle</value>
+    <value>Fix LAN Component</value>
   </data>
-  <data name="FixPermission" xml:space="preserve">
+  <data name="FixPermission.Content" xml:space="preserve">
     <value>Fix Permission</value>
   </data>
   <data name="GiveMeATarget" xml:space="preserve">
     <value>Give me a target!</value>
   </data>
-  <data name="InvalidDirectory" xml:space="preserve">
+  <data name="HesInMyScope" xml:space="preserve">
+    <value>He's in my scope.</value>
+  </data>
+  <data name="HowAboutATarget" xml:space="preserve">
+    <value>How about a target?</value>
+  </data>
+  <data name="IHaveTheTools" xml:space="preserve">
+    <value>I have the tools: </value>
+  </data>
+  <data name="ItsTooQuietHere" xml:space="preserve">
     <value>It's too quiet here.</value>
   </data>
   <data name="PlayIntroVideo.Header" xml:space="preserve">
@@ -139,10 +148,16 @@
     <value>Resolution</value>
   </data>
   <data name="Resolutions.PlaceholderText" xml:space="preserve">
-    <value>Select a resolution</value>
+    <value>Just give me a clear view</value>
   </data>
   <data name="SelectGame.Content" xml:space="preserve">
-    <value>Select game.exe</value>
+    <value>Find a hot spot: game.exe</value>
+  </data>
+  <data name="VisibilityClear" xml:space="preserve">
+    <value>Visibility clear: </value>
+  </data>
+  <data name="WerePinnedDown" xml:space="preserve">
+    <value>We're pinned down!</value>
   </data>
   <data name="WhereIsDir.Message" xml:space="preserve">
     <value>Commander, where is our Red Alert 2 command center?</value>
