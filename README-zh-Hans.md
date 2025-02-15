@@ -1,4 +1,4 @@
-# Ra2Helper
+# 红警2助手（Ra2Helper）
 
 - [English](./README.md)
 - [汉字](./README-zh-Hans.md)
@@ -13,13 +13,13 @@
 
 ![](./Assets/StoreLogo.scale-600.png)
 
-Ra2Helper is a tool designed for Red Alert 2, engineered to boost your battlefield performance.
+红警2助手（Ra2Helper）是一款为《红色警戒 2》设计的工具，旨在提升你的战场表现。
 
-It swiftly fixes the LAN multiplayer component and supports high-definition resolutions, including:
+它能修复局域网多人联机组件，并支持高分辨率，包括：
 
 - 3440x1440
 - 2560x1080
 - 1920x1080
-- And more
+- 等等
 
-Reminder: Since the Microsoft Store no longer supports Windows 8, this software can only be installed on Windows 10 and later versions.
+提醒：由于微软商店已停止支持 Windows 8，所以此软件仅能在 Windows 10 及更高版本的操作系统上安装。
