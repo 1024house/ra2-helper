@@ -72,7 +72,14 @@ namespace Ra2Helper
                 Notice.Message = resourceLoader.GetString("HowAboutATarget");
                 Notice.Severity = InfoBarSeverity.Error;
                 EnableDisableGridElements(Features, false);
+                Ra2.Visibility = Visibility.Collapsed;
+                Yuri.Visibility = Visibility.Collapsed;
                 return;
+            }
+            Ra2.Visibility = Visibility.Visible;
+            if (System.IO.File.Exists(gameDir + "\\gamemd.exe"))
+            {
+                Yuri.Visibility = Visibility.Visible;
             }
             if (!IsDirectoryWritable(gameDir))
             {
@@ -367,6 +374,45 @@ namespace Ra2Helper
                 }
             }
             PlayIntroVideo.IsOn = yesCount == 2;
+        }
+
+        /**
+         * start game.exe
+         */
+        private void StartRa2_Click(object sender, RoutedEventArgs e)
+        {
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = gameDir + "\\game.exe",
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Maximized
+            };
+
+            var process = new Process
+            {
+                StartInfo = processInfo,
+                EnableRaisingEvents = true
+            };
+
+            process.Start();
+        }
+
+        private void StartYuri_Click(object sender, RoutedEventArgs e)
+        {
+            var processInfo = new ProcessStartInfo
+            {
+                FileName = gameDir + "\\gamemd.exe",
+                UseShellExecute = true,
+                WindowStyle = ProcessWindowStyle.Maximized
+            };
+
+            var process = new Process
+            {
+                StartInfo = processInfo,
+                EnableRaisingEvents = true
+            };
+
+            process.Start();
         }
     }
 }

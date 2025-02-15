@@ -153,6 +153,9 @@
   <data name="PlayIntroVideo.Header" xml:space="preserve">
     <value>Play Intro Video</value>
   </data>
+  <data name="Ra2.Text" xml:space="preserve">
+    <value>Red Alert 2</value>
+  </data>
   <data name="Resolutions.Header" xml:space="preserve">
     <value>Resolution</value>
   </data>
@@ -162,6 +165,9 @@
   <data name="SelectGame.Content" xml:space="preserve">
     <value>Find a hot spot: game.exe</value>
   </data>
+  <data name="StartGame.Text" xml:space="preserve">
+    <value>Start Game</value>
+  </data>
   <data name="VisibilityClear" xml:space="preserve">
     <value>Visibility clear: </value>
   </data>
@@ -170,5 +176,8 @@
   </data>
   <data name="WhereIsDir.Message" xml:space="preserve">
     <value>Commander, where is our Red Alert 2 command center?</value>
+  </data>
+  <data name="Yuri.Text" xml:space="preserve">
+    <value>Yuri's Revenge</value>
   </data>
 </root>

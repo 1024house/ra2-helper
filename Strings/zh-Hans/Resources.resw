@@ -153,6 +153,9 @@
   <data name="PlayIntroVideo.Header" xml:space="preserve">
     <value>播放开场动画</value>
   </data>
+  <data name="Ra2.Text" xml:space="preserve">
+    <value>红色警戒2</value>
+  </data>
   <data name="Resolutions.Header" xml:space="preserve">
     <value>分辨率</value>
   </data>
@@ -162,6 +165,9 @@
   <data name="SelectGame.Content" xml:space="preserve">
     <value>寻找热点：game.exe</value>
   </data>
+  <data name="StartGame.Text" xml:space="preserve">
+    <value>启动游戏</value>
+  </data>
   <data name="VisibilityClear" xml:space="preserve">
     <value>视野清晰：</value>
   </data>
@@ -170,5 +176,8 @@
   </data>
   <data name="WhereIsDir.Message" xml:space="preserve">
     <value>指挥官，我们的红色警戒2指挥中心在哪里？</value>
+  </data>
+  <data name="Yuri.Text" xml:space="preserve">
+    <value>尤里的复仇</value>
   </data>
 </root>

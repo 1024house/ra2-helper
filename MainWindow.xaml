@@ -30,6 +30,24 @@
                     <ToggleButton x:Name="FixLanBattle" x:Uid="FixLan" Click="FixLanBattle_Click" HorizontalAlignment="Left" IsEnabled="False" />
                 </Grid>
             </Grid>
+            <Grid x:Name="StartGame" Grid.Row="3" Margin="20">
+                <StackPanel Orientation="Horizontal" Grid.Row="1">
+                    <Button Click="StartRa2_Click"
+           Background="#0078d4" Foreground="White" x:Name="Ra2" Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="Play" />
+                            <TextBlock x:Uid="Ra2" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Click="StartYuri_Click" Margin="20,0,0,0"
+Background="#c42b1c" Foreground="White" x:Name="Yuri" Visibility="Collapsed">
+                        <StackPanel Orientation="Horizontal">
+                            <SymbolIcon Symbol="Play" />
+                            <TextBlock x:Uid="Yuri" Margin="5,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Grid>
         <HyperlinkButton x:Uid="FeedbackLink" HorizontalAlignment="Right" VerticalAlignment="Bottom">
             <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Center">
