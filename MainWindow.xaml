@@ -9,25 +9,33 @@
     mc:Ignorable="d"
     Title="Ra2Helper">
 
-    <Grid RowDefinitions ="Auto, Auto, *">
-        <InfoBar x:Name="Notice" IsOpen="True" IsClosable="False" Severity="Informational"
+    <Grid>
+        <Grid RowDefinitions ="Auto, Auto, Auto, *">
+            <InfoBar x:Name="Notice" IsOpen="True" IsClosable="False" Severity="Informational"
                  x:Uid="WhereIsDir" Grid.Row="0" />
-        <Grid x:Name="Prepare" Grid.Row="1" Margin="20">
-            <Button Click="SelectGame_Click" x:Uid="SelectGame" HorizontalAlignment="Left"
+            <Grid x:Name="Prepare" Grid.Row="1" Margin="20">
+                <Button Click="SelectGame_Click" x:Uid="SelectGame" HorizontalAlignment="Left"
                 Background="#0078d4" Foreground="White" />
-            <Button Click="FixPermission_Click" x:Uid="FixPermission" HorizontalAlignment="Right"
+                <Button Click="FixPermission_Click" x:Uid="FixPermission" HorizontalAlignment="Right"
      Background="#c42b1c" Foreground="White" x:Name="FixPermission" Visibility="Collapsed" />
-        </Grid>
-        <Grid x:Name="Features" Grid.Row="2" RowDefinitions="Auto, Auto" Margin="30,0">
-            <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto">
-                <ComboBox x:Name="Resolutions" x:Uid="Resolutions"
+            </Grid>
+            <Grid x:Name="Features" Grid.Row="2" RowDefinitions="Auto, Auto" Margin="30,0">
+                <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto">
+                    <ComboBox x:Name="Resolutions" x:Uid="Resolutions"
                       SelectionChanged="Resolutions_SelectionChanged" Grid.Column="0" IsEnabled="False" />
-                <ToggleSwitch x:Name="PlayIntroVideo" x:Uid="PlayIntroVideo"
+                    <ToggleSwitch x:Name="PlayIntroVideo" x:Uid="PlayIntroVideo"
                       IsOn="False" Toggled="PlayIntroVideo_Toggled" Grid.Column="1" Margin="20, 0" IsEnabled="False" />
-            </Grid>
-            <Grid Grid.Row="1" Margin="0,10">
-                <ToggleButton x:Name="FixLanBattle" x:Uid="FixLan" Click="FixLanBattle_Click" HorizontalAlignment="Left" IsEnabled="False" />
+                </Grid>
+                <Grid Grid.Row="1" Margin="0,10">
+                    <ToggleButton x:Name="FixLanBattle" x:Uid="FixLan" Click="FixLanBattle_Click" HorizontalAlignment="Left" IsEnabled="False" />
+                </Grid>
             </Grid>
         </Grid>
+        <HyperlinkButton x:Uid="FeedbackLink" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                <Image Source="ms-appx:///Assets/StoreLogo.scale-400.png" Width="200" Height="200" />
+                <TextBlock x:Uid="Feedback" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </HyperlinkButton>
     </Grid>
 </Window>

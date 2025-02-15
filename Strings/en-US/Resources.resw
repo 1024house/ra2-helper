@@ -123,6 +123,12 @@
   <data name="DirectoryRequiresAdmin" xml:space="preserve">
     <value>I need support! This directory requires administrator privileges!</value>
   </data>
+  <data name="Feedback.Text" xml:space="preserve">
+    <value>Feedback</value>
+  </data>
+  <data name="FeedbackLink.NavigateUri" xml:space="preserve">
+    <value>https://github.com/1024house/ra2-helper/issues</value>
+  </data>
   <data name="FixLan.Content" xml:space="preserve">
     <value>Fix LAN Component</value>
   </data>

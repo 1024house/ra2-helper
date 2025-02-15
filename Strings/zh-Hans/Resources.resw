@@ -123,6 +123,12 @@
   <data name="DirectoryRequiresAdmin" xml:space="preserve">
     <value>我需要帮助！目录需要管理员权限！</value>
   </data>
+  <data name="Feedback.Text" xml:space="preserve">
+    <value>反馈</value>
+  </data>
+  <data name="FeedbackLink.NavigateUri" xml:space="preserve">
+    <value>https://cnb.cool/1024house/ra2-helper/-/issues</value>
+  </data>
   <data name="FixLan.Content" xml:space="preserve">
     <value>修复局域网联机组件</value>
   </data>
