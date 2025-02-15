@@ -26,6 +26,7 @@ namespace Ra2Helper
             AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 800 });
             Resolutions.ItemsSource = GetSystemResolutions();
             resourceLoader = ResourceLoader.GetForViewIndependentUse();
+            this.Title = resourceLoader.GetString("AppDisplayName");
         }
 
         private List<string> GetSystemResolutions()

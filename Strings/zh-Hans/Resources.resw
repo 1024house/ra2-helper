@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AppDisplayName" xml:space="preserve">
+    <value>红警2助手</value>
+  </data>
   <data name="DirectoryRequiresAdmin" xml:space="preserve">
     <value>我需要帮助！目录需要管理员权限！</value>
   </data>
