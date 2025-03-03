@@ -28,6 +28,63 @@ namespace Ra2Helper
             Resolutions.ItemsSource = GetSystemResolutions();
             resourceLoader = ResourceLoader.GetForViewIndependentUse();
             this.Title = resourceLoader.GetString("AppDisplayName");
+            DetectInstallPathFromRegistry();
+        }
+
+        private void DetectInstallPathFromRegistry()
+        {
+            try
+            {
+                // 64-bit: HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Westwood\Red Alert 2
+                // 32-bit: HKEY_LOCAL_MACHINE\SOFTWARE\Westwood\Red Alert 2
+                string keyPath = @"HKLM\SOFTWARE\WOW6432Node\Westwood\Red Alert 2";
+                if (!Environment.Is64BitOperatingSystem)
+                {
+                    keyPath = @"HKLM\SOFTWARE\Westwood\Red Alert 2";
+                }
+
+                string valueName = "InstallPath";
+                string command = $"reg query \"{keyPath}\" /v {valueName}";
+
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c {command}",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                var process = new Process
+                {
+                    StartInfo = processInfo,
+                    EnableRaisingEvents = true
+                };
+
+                process.OutputDataReceived += (s, e) =>
+                {
+                    if (!string.IsNullOrEmpty(e.Data) && e.Data.Contains(valueName))
+                    {
+                        var match = System.Text.RegularExpressions.Regex.Match(e.Data, $@"{valueName}\s+REG_SZ\s+(.+)");
+                        if (match.Success)
+                        {
+                            gameDir = Path.GetDirectoryName(match.Groups[1].Value.Trim());
+                            DispatcherQueue.TryEnqueue(() =>
+                            {
+                                UpdateUiByGameDir();
+                            });
+                        }
+                    }
+                };
+
+                process.Start();
+                process.BeginOutputReadLine();
+            }
+            catch (Exception ex)
+            {
+                Notice.Message = $"{resourceLoader.GetString("WerePinnedDown")}: {ex.Message}";
+                Notice.Severity = InfoBarSeverity.Error;
+            }
         }
 
         private List<string> GetSystemResolutions()
@@ -68,6 +125,11 @@ namespace Ra2Helper
                 return;
             }
             gameDir = System.IO.Path.GetDirectoryName(file.Path);
+            UpdateUiByGameDir();
+        }
+
+        private void UpdateUiByGameDir()
+        {
             if (!System.IO.File.Exists(gameDir + "\\game.exe") && !System.IO.File.Exists(gameDir + "\\gamemd.exe"))
             {
                 Notice.Message = resourceLoader.GetString("HowAboutATarget");
