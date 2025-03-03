@@ -132,6 +132,9 @@
   <data name="FixLan.Content" xml:space="preserve">
     <value>修復區域網路連線元件</value>
   </data>
+  <data name="FixLanFatalStringManager.Content" xml:space="preserve">
+    <value>修復 FATAL String Manager failed to initialized properly</value>
+  </data>
   <data name="FixPermission.Content" xml:space="preserve">
     <value>修正資料夾權限</value>
   </data>

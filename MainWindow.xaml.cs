@@ -8,6 +8,7 @@ using System.Security.Principal;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.Win32;
 using SoftCircuits.IniFileParser;
 using Windows.ApplicationModel.Resources;
 using WinRT.Interop;
@@ -23,7 +24,7 @@ namespace Ra2Helper
             InitializeComponent();
             this.AppWindow.SetIcon("App.ico");
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
-            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 800 });
+            AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 1024 });
             Resolutions.ItemsSource = GetSystemResolutions();
             resourceLoader = ResourceLoader.GetForViewIndependentUse();
             this.Title = resourceLoader.GetString("AppDisplayName");
@@ -413,6 +414,59 @@ namespace Ra2Helper
             };
 
             process.Start();
+        }
+
+        /**
+         * Fix FATAL String Manager failed to initialized properly
+         * click button to set the exe file's Windows Program Compatibility to WINXPSP2
+         */
+        private void FixLanFatalStringManager_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string gameExePath = gameDir + "\\game.exe";
+                string gamemdExePath = gameDir + "\\gamemd.exe";
+                string keyPath = $"HKCU\\Software\\Microsoft\\Windows NT\\CurrentVersion\\AppCompatFlags\\Layers";
+                string command = $"reg add \"{keyPath}\" /v \"{gameExePath}\" /d \"~ WINXPSP2\" /f";
+                string command2 = $"reg add \"{keyPath}\" /v \"{gamemdExePath}\" /d \"~ WINXPSP2\" /f";
+
+                var processInfo = new ProcessStartInfo
+                {
+                    FileName = "cmd.exe",
+                    Arguments = $"/c {command} & {command2}",
+                    UseShellExecute = true
+                };
+
+                var process = new Process
+                {
+                    StartInfo = processInfo,
+                    EnableRaisingEvents = true
+                };
+
+                process.Exited += (s, args) =>
+                {
+                    DispatcherQueue.TryEnqueue(() =>
+                    {
+                        if (process.ExitCode == 0)
+                        {
+                            Notice.Message = resourceLoader.GetString("HesInMyScope");
+                            Notice.Severity = InfoBarSeverity.Success;
+                        }
+                        else
+                        {
+                            Notice.Message = resourceLoader.GetString("GiveMeATarget");
+                            Notice.Severity = InfoBarSeverity.Error;
+                        }
+                    });
+                };
+
+                process.Start();
+            }
+            catch (Exception ex)
+            {
+                Notice.Message = $"{resourceLoader.GetString("WerePinnedDown")}: {ex.Message}";
+                Notice.Severity = InfoBarSeverity.Error;
+            }
         }
     }
 }

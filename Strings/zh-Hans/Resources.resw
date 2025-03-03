@@ -132,6 +132,9 @@
   <data name="FixLan.Content" xml:space="preserve">
     <value>修复局域网联机组件</value>
   </data>
+  <data name="FixLanFatalStringManager.Content" xml:space="preserve">
+    <value>修复 FATAL String Manager failed to initialized properly</value>
+  </data>
   <data name="FixPermission.Content" xml:space="preserve">
     <value>修复权限</value>
   </data>

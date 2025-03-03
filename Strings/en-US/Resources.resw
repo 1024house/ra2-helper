@@ -132,6 +132,9 @@
   <data name="FixLan.Content" xml:space="preserve">
     <value>Fix LAN Component</value>
   </data>
+  <data name="FixLanFatalStringManager.Content" xml:space="preserve">
+    <value>Fix FATAL String Manager failed to initialized properly</value>
+  </data>
   <data name="FixPermission.Content" xml:space="preserve">
     <value>Fix Permission</value>
   </data>
