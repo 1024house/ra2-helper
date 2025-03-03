@@ -28,7 +28,50 @@ namespace Ra2Helper
             Resolutions.ItemsSource = GetSystemResolutions();
             resourceLoader = ResourceLoader.GetForViewIndependentUse();
             this.Title = resourceLoader.GetString("AppDisplayName");
-            DetectInstallPathFromRegistry();
+            DetectEaAndSteamGameDir();
+            if (gameDir != null)
+            {
+                UpdateUiByGameDir();
+            }
+            else
+            {
+                DetectInstallPathFromRegistry();
+            }
+        }
+
+        private void DetectEaAndSteamGameDir()
+        {
+            string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+            string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+
+            string[] eaPaths = new string[]
+            {
+                Path.Combine(programFiles, "EA Games", "Command and Conquer Red Alert II"),
+                Path.Combine(programFilesX86, "EA Games", "Command and Conquer Red Alert II")
+            };
+
+            string[] steamPaths = new string[]
+            {
+                Path.Combine(programFilesX86, "Steam", "steamapps", "common", "Command & Conquer Red Alert II"),
+                Path.Combine(programFiles, "Steam", "steamapps", "common", "Command & Conquer Red Alert II")
+            };
+
+            foreach (var path in eaPaths)
+            {
+                if (Directory.Exists(path))
+                {
+                    gameDir = path;
+                    return;
+                }
+            }
+            foreach (var path in steamPaths)
+            {
+                if (Directory.Exists(path))
+                {
+                    gameDir = path;
+                    return;
+                }
+            }
         }
 
         private void DetectInstallPathFromRegistry()
