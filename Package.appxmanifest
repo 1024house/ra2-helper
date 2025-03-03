@@ -10,7 +10,7 @@
   <Identity
     Name="MiHouseTechnologyTianjinC.Ra2Helper"
     Publisher="CN=C2441BA8-D982-408F-9854-8334307E1447"
-    Version="1.5.0.0" />
+    Version="1.5.1.0" />
 
   <mp:PhoneIdentity PhoneProductId="e88742b1-9fff-4d4c-9df3-cc41c6e8dbf2" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
