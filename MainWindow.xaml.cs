@@ -8,7 +8,9 @@ using System.Security.Principal;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.Win32;
+using System.Diagnostics.CodeAnalysis;
+using Windows.UI.Text;
+using Microsoft.UI.Text;
 using SoftCircuits.IniFileParser;
 using Windows.ApplicationModel.Resources;
 using WinRT.Interop;
@@ -19,7 +21,7 @@ namespace Ra2Helper
     {
         public string Text { get; set; }
         public bool IsCorrect { get; set; }
-        public string WeightString => IsCorrect ? "Bold" : "Normal";
+        public FontWeight FontWeight => IsCorrect ? FontWeights.Bold : FontWeights.Normal;
     }
 
     public sealed partial class MainWindow : Window
@@ -137,6 +139,7 @@ namespace Ra2Helper
             }
         }
 
+        [DynamicDependency(DynamicallyAccessedMemberTypes.PublicProperties, typeof(ResolutionItem))]
         private List<ResolutionItem> GetAllResolutionsWithCorrectFlag()
         {
             List<string> all = new();
