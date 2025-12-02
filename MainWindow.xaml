@@ -22,7 +22,13 @@
             <Grid x:Name="Features" Grid.Row="2" RowDefinitions="Auto, Auto, Auto" Margin="30,0">
                 <Grid Grid.Row="0" ColumnDefinitions="Auto, Auto">
                     <ComboBox x:Name="Resolutions" x:Uid="Resolutions"
-                      SelectionChanged="Resolutions_SelectionChanged" Grid.Column="0" IsEnabled="False" />
+                      SelectionChanged="Resolutions_SelectionChanged" Grid.Column="0" IsEnabled="False">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Text}" FontWeight="{Binding WeightString}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
                     <ToggleSwitch x:Name="PlayIntroVideo" x:Uid="PlayIntroVideo"
                       IsOn="False" Toggled="PlayIntroVideo_Toggled" Grid.Column="1" Margin="20, 0" IsEnabled="False" />
                 </Grid>

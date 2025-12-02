@@ -15,6 +15,13 @@ using WinRT.Interop;
 
 namespace Ra2Helper
 {
+    public class ResolutionItem
+    {
+        public string Text { get; set; }
+        public bool IsCorrect { get; set; }
+        public string WeightString => IsCorrect ? "Bold" : "Normal";
+    }
+
     public sealed partial class MainWindow : Window
     {
         private string gameDir;
@@ -25,7 +32,7 @@ namespace Ra2Helper
             this.AppWindow.SetIcon("App.ico");
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 1024 });
-            Resolutions.ItemsSource = GetSystemResolutions();
+            Resolutions.ItemsSource = GetAllResolutionsWithCorrectFlag();
             resourceLoader = ResourceLoader.GetForViewIndependentUse();
             this.Title = resourceLoader.GetString("AppDisplayName");
             DetectEaAndSteamGameDir();
@@ -130,21 +137,71 @@ namespace Ra2Helper
             }
         }
 
-        private List<string> GetSystemResolutions()
+        private List<ResolutionItem> GetAllResolutionsWithCorrectFlag()
         {
-            List<string> systemResolutions = new();
-            var vDevMode = new DEVMODE();
+            List<string> all = new();
+            var v = new DEVMODE();
             var i = 0;
-            while (EnumDisplaySettings(null, i, ref vDevMode))
+            int maxW = 0;
+            int maxH = 0;
+            long maxArea = -1;
+            while (EnumDisplaySettings(null, i, ref v))
             {
-                var resolution = $"{vDevMode.dmPelsWidth}x{vDevMode.dmPelsHeight}";
-                if (!systemResolutions.Contains(resolution))
+                var w = v.dmPelsWidth;
+                var h = v.dmPelsHeight;
+                var s = $"{w}x{h}";
+                if (!all.Contains(s))
                 {
-                    systemResolutions.Insert(0, resolution);
+                    all.Add(s);
+                    var area = (long)w * h;
+                    if (area > maxArea)
+                    {
+                        maxArea = area;
+                        maxW = w;
+                        maxH = h;
+                    }
                 }
                 i++;
             }
-            return systemResolutions;
+            double highest = maxH == 0 ? 0.0 : (double)maxW / maxH;
+            double target = Math.Truncate(highest * 10.0) / 10.0;
+            List<ResolutionItem> items = new();
+            foreach (var s in all)
+            {
+                var parts = s.Split('x');
+                if (parts.Length != 2)
+                {
+                    continue;
+                }
+                if (!int.TryParse(parts[0], out var w))
+                {
+                    continue;
+                }
+                if (!int.TryParse(parts[1], out var h))
+                {
+                    continue;
+                }
+                if (h == 0)
+                {
+                    continue;
+                }
+                var ratio = (double)w / h;
+                var r = Math.Truncate(ratio * 10.0) / 10.0;
+                items.Add(new ResolutionItem { Text = s, IsCorrect = Math.Abs(r - target) < 1e-9 });
+            }
+            items.Sort((a, b) =>
+            {
+                var pa = a.Text.Split('x');
+                var pb = b.Text.Split('x');
+                int wa = int.Parse(pa[0]);
+                int ha = int.Parse(pa[1]);
+                int wb = int.Parse(pb[0]);
+                int hb = int.Parse(pb[1]);
+                long aa = (long)wa * ha;
+                long ab = (long)wb * hb;
+                return ab.CompareTo(aa);
+            });
+            return items;
         }
 
         private void SelectGame_Click(object sender, RoutedEventArgs e)
@@ -260,7 +317,7 @@ namespace Ra2Helper
             {
                 return;
             }
-            var resolution = Resolutions.SelectedItem.ToString();
+            var resolution = (Resolutions.SelectedItem as ResolutionItem)?.Text ?? Resolutions.SelectedItem.ToString();
             SetResolutionToDDrawCompatIniFile(resolution);
             SetResolutionToRa2AndRa2mdIniFile(resolution);
         }
