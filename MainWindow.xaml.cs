@@ -37,7 +37,8 @@ namespace Ra2Helper
             this.AppWindow.SetIcon("App.ico");
             AppWindow.SetPresenter(AppWindowPresenterKind.Default);
             AppWindow.Resize(new Windows.Graphics.SizeInt32 { Width = 1280, Height = 1024 });
-            Resolutions.ItemsSource = GetAllResolutionsWithCorrectFlag();
+            Ra2Resolutions.ItemsSource = GetAllResolutionsWithCorrectFlag();
+            YuriResolutions.ItemsSource = GetAllResolutionsWithCorrectFlag();
             resourceLoader = ResourceLoader.GetForViewIndependentUse();
             this.Title = resourceLoader.GetString("AppDisplayName");
             DetectEaAndSteamGameDir();
@@ -245,11 +246,10 @@ namespace Ra2Helper
                 Yuri.Visibility = Visibility.Collapsed;
                 return;
             }
-            Ra2.Visibility = Visibility.Visible;
-            if (System.IO.File.Exists(gameDir + "\\gamemd.exe"))
-            {
-                Yuri.Visibility = Visibility.Visible;
-            }
+            var hasRa2 = System.IO.File.Exists(gameDir + "\\game.exe");
+            var hasYuri = System.IO.File.Exists(gameDir + "\\gamemd.exe");
+            Ra2.Visibility = hasRa2 ? Visibility.Visible : Visibility.Collapsed;
+            Yuri.Visibility = hasYuri ? Visibility.Visible : Visibility.Collapsed;
             if (!IsDirectoryWritable(gameDir))
             {
                 Notice.Message = resourceLoader.GetString("DirectoryRequiresAdmin");
@@ -260,8 +260,13 @@ namespace Ra2Helper
             }
             Notice.Message = gameDir;
             Notice.Severity = InfoBarSeverity.Success;
-            Resolutions.SelectedItem = null;
+            Ra2Resolutions.SelectedItem = null;
+            YuriResolutions.SelectedItem = null;
             EnableDisableGridElements(Features, true);
+            Ra2Resolutions.IsEnabled = hasRa2;
+            Ra2PlayIntroVideo.IsEnabled = hasRa2;
+            YuriResolutions.IsEnabled = hasYuri;
+            YuriPlayIntroVideo.IsEnabled = hasYuri;
             CheckPlayIntroVideo();
             AutoSelectResolutionFromIni();
         }
@@ -318,43 +323,50 @@ namespace Ra2Helper
 
         }
 
-        private void Resolutions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Ra2Resolutions_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (Resolutions.SelectedItem == null)
+            HandleResolutionSelection(Ra2Resolutions, "ra2.ini");
+        }
+
+        private void YuriResolutions_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            HandleResolutionSelection(YuriResolutions, "ra2md.ini");
+        }
+
+        private void HandleResolutionSelection(ComboBox combo, string iniFile)
+        {
+            if (combo?.SelectedItem == null)
             {
                 return;
             }
-            var resolution = (Resolutions.SelectedItem as ResolutionItem)?.Text ?? Resolutions.SelectedItem.ToString();
+            var resolution = (combo.SelectedItem as ResolutionItem)?.Text ?? combo.SelectedItem.ToString();
+            SetResolutionToIniFile(iniFile, resolution);
             SetResolutionToDDrawCompatIniFile(resolution);
-            SetResolutionToRa2AndRa2mdIniFile(resolution);
         }
 
-        private void SetResolutionToRa2AndRa2mdIniFile(string resolution)
+        private void SetResolutionToIniFile(string iniFile, string resolution)
         {
-            // step 2: add AllowHiResModes=yes to ra2.ini and ra2md.ini
-            // step 3: add resolution to ra2.ini and ra2md.ini
-            string[] iniFiles = ["ra2.ini", "ra2md.ini"];
+            // step 2: add AllowHiResModes=yes to iniFile
+            // step 3: add resolution to iniFile
             var file = new IniFile();
-            var successCount = 0;
-            foreach (var iniFile in iniFiles)
+            var iniPath = Path.Combine(gameDir ?? string.Empty, iniFile);
+            if (!File.Exists(iniPath))
             {
-                var iniPath2 = gameDir + "\\" + iniFile;
-                if (!File.Exists(iniPath2))
-                {
-                    continue;
-                }
-                file.Load(iniPath2);
-                file.SetSetting("Video", "AllowHiResModes", "yes");
-                file.SetSetting("Video", "ScreenWidth", resolution.Split('x')[0]);
-                file.SetSetting("Video", "ScreenHeight", resolution.Split('x')[1]);
-                file.Save(iniPath2);
-                if (File.ReadAllText(iniPath2).Contains("AllowHiResModes=yes")
-                    && file.GetSetting("Video", "ScreenWidth") == resolution.Split('x')[0])
-                {
-                    successCount++;
-                }
+                return;
             }
-            if (successCount > 0)
+
+            file.Load(iniPath);
+            file.SetSetting("Video", "AllowHiResModes", "yes");
+            var parts = resolution.Split('x');
+            if (parts.Length >= 2)
+            {
+                file.SetSetting("Video", "ScreenWidth", parts[0]);
+                file.SetSetting("Video", "ScreenHeight", parts[1]);
+            }
+            file.Save(iniPath);
+
+            if (File.ReadAllText(iniPath).Contains("AllowHiResModes=yes")
+                && file.GetSetting("Video", "ScreenWidth") == parts[0])
             {
                 Notice.Message = resourceLoader.GetString("VisibilityClear") + resolution;
                 Notice.Severity = InfoBarSeverity.Success;
@@ -394,49 +406,47 @@ namespace Ra2Helper
             File.WriteAllLines(iniFile, lines);
         }
 
-        private string GetResolutionFromIni()
+        private string GetResolutionFromIni(string iniFile)
         {
-            string[] order = ["ra2md.ini", "ra2.ini"];
-            var file = new IniFile();
-            foreach (var ini in order)
+            var p = Path.Combine(gameDir ?? string.Empty, iniFile);
+            if (!File.Exists(p))
             {
-                var p = gameDir + "\\" + ini;
-                if (!File.Exists(p))
-                {
-                    continue;
-                }
-                file.Load(p);
-                var w = file.GetSetting("Video", "ScreenWidth");
-                var h = file.GetSetting("Video", "ScreenHeight");
-                if (int.TryParse(w, out var wi) && int.TryParse(h, out var hi) && wi > 0 && hi > 0)
-                {
-                    return wi + "x" + hi;
-                }
+                return null;
             }
+
+            var file = new IniFile();
+            file.Load(p);
+            var w = file.GetSetting("Video", "ScreenWidth");
+            var h = file.GetSetting("Video", "ScreenHeight");
+            if (int.TryParse(w, out var wi) && int.TryParse(h, out var hi) && wi > 0 && hi > 0)
+            {
+                return wi + "x" + hi;
+            }
+
             return null;
         }
 
         private void AutoSelectResolutionFromIni()
         {
-            var res = GetResolutionFromIni();
-            if (string.IsNullOrEmpty(res))
+            AutoSelectResolutionFor(Ra2Resolutions, "ra2.ini");
+            AutoSelectResolutionFor(YuriResolutions, "ra2md.ini");
+        }
+
+        private void AutoSelectResolutionFor(ComboBox combo, string iniFile)
+        {
+            var res = GetResolutionFromIni(iniFile);
+            if (!string.IsNullOrEmpty(res) && combo.ItemsSource is List<ResolutionItem> items)
             {
-                return;
+                var found = items.Find(i => i.Text == res);
+                if (found == null)
+                {
+                    found = new ResolutionItem { Text = res, IsCorrect = false, IsWarning = true };
+                    items.Insert(0, found);
+                    combo.ItemsSource = null;
+                    combo.ItemsSource = items;
+                }
+                combo.SelectedItem = found;
             }
-            var items = Resolutions.ItemsSource as List<ResolutionItem>;
-            if (items == null)
-            {
-                return;
-            }
-            var found = items.Find(i => i.Text == res);
-            if (found == null)
-            {
-                found = new ResolutionItem { Text = res, IsCorrect = false, IsWarning = true };
-                items.Insert(0, found);
-                Resolutions.ItemsSource = null;
-                Resolutions.ItemsSource = items;
-            }
-            Resolutions.SelectedItem = found;
         }
 
         // click button to fix lan battle program by unzip ipxwrapper.zip from Assets dir to game directory
@@ -544,27 +554,45 @@ namespace Ra2Helper
             process.Start();
         }
 
-        private void PlayIntroVideo_Toggled(object sender, RoutedEventArgs e)
+        private void Ra2PlayIntroVideo_Toggled(object sender, RoutedEventArgs e)
         {
-            ToggleSwitch toggleSwitch = sender as ToggleSwitch;
+            HandlePlayIntroToggle(sender as ToggleSwitch, "ra2.ini");
+        }
+
+        private void YuriPlayIntroVideo_Toggled(object sender, RoutedEventArgs e)
+        {
+            HandlePlayIntroToggle(sender as ToggleSwitch, "ra2md.ini");
+        }
+
+        private void HandlePlayIntroToggle(ToggleSwitch toggleSwitch, string iniFile)
+        {
             if (toggleSwitch == null)
             {
                 return;
             }
             var play = toggleSwitch.IsOn ? "yes" : "no";
-            string[] iniFiles = ["ra2.ini", "ra2md.ini"];
             var file = new IniFile();
-            foreach (var iniFile in iniFiles)
+            var iniPath = Path.Combine(gameDir ?? string.Empty, iniFile);
+            if (!File.Exists(iniPath))
             {
-                var iniPath2 = gameDir + "\\" + iniFile;
-                if (!File.Exists(iniPath2))
-                {
-                    continue;
-                }
-                file.Load(iniPath2);
-                file.SetSetting("Intro", "Play", play);
-                file.Save(iniPath2);
+                return;
             }
+
+            file.Load(iniPath);
+            file.SetSetting("Intro", "Play", play);
+            file.Save(iniPath);
+        }
+
+        private bool GetPlayIntroStatus(string iniFile)
+        {
+            var iniPath = Path.Combine(gameDir ?? string.Empty, iniFile);
+            if (File.Exists(iniPath))
+            {
+                var file = new IniFile();
+                file.Load(iniPath);
+                return file.GetSetting("Intro", "Play") == "yes";
+            }
+            return false;
         }
 
         /**
@@ -572,23 +600,8 @@ namespace Ra2Helper
          */
         private void CheckPlayIntroVideo()
         {
-            string[] iniFiles = ["ra2.ini", "ra2md.ini"];
-            var file = new IniFile();
-            var yesCount = 0;
-            foreach (var iniFile in iniFiles)
-            {
-                var iniPath2 = gameDir + "\\" + iniFile;
-                if (!File.Exists(iniPath2))
-                {
-                    continue;
-                }
-                file.Load(iniPath2);
-                if (file.GetSetting("Intro", "Play") == "yes")
-                {
-                    yesCount++;
-                }
-            }
-            PlayIntroVideo.IsOn = yesCount == 2;
+            Ra2PlayIntroVideo.IsOn = GetPlayIntroStatus("ra2.ini");
+            YuriPlayIntroVideo.IsOn = GetPlayIntroStatus("ra2md.ini");
         }
 
         /**
@@ -596,27 +609,19 @@ namespace Ra2Helper
          */
         private void StartRa2_Click(object sender, RoutedEventArgs e)
         {
-            var processInfo = new ProcessStartInfo
-            {
-                FileName = gameDir + "\\game.exe",
-                UseShellExecute = true,
-                WindowStyle = ProcessWindowStyle.Maximized
-            };
-
-            var process = new Process
-            {
-                StartInfo = processInfo,
-                EnableRaisingEvents = true
-            };
-
-            process.Start();
+            StartGame("game.exe");
         }
 
         private void StartYuri_Click(object sender, RoutedEventArgs e)
         {
+            StartGame("gamemd.exe");
+        }
+
+        private void StartGame(string exeName)
+        {
             var processInfo = new ProcessStartInfo
             {
-                FileName = gameDir + "\\gamemd.exe",
+                FileName = Path.Combine(gameDir ?? string.Empty, exeName),
                 UseShellExecute = true,
                 WindowStyle = ProcessWindowStyle.Maximized
             };
