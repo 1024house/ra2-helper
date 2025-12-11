@@ -25,7 +25,7 @@
                       SelectionChanged="Resolutions_SelectionChanged" Grid.Column="0" IsEnabled="False">
                         <ComboBox.ItemTemplate>
                             <DataTemplate x:DataType="local:ResolutionItem">
-                                <TextBlock Text="{x:Bind Text}" FontWeight="{x:Bind FontWeight}"/>
+                                <TextBlock Text="{x:Bind Text}" FontWeight="{x:Bind FontWeight}" Foreground="{x:Bind Foreground}"/>
                             </DataTemplate>
                         </ComboBox.ItemTemplate>
                     </ComboBox>

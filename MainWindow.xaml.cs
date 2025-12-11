@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls;
 using System.Diagnostics.CodeAnalysis;
 using Windows.UI.Text;
 using Microsoft.UI.Text;
+using Microsoft.UI.Xaml.Media;
 using SoftCircuits.IniFileParser;
 using Windows.ApplicationModel.Resources;
 using WinRT.Interop;
@@ -22,6 +23,8 @@ namespace Ra2Helper
         public string Text { get; set; }
         public bool IsCorrect { get; set; }
         public FontWeight FontWeight => IsCorrect ? FontWeights.Bold : FontWeights.Normal;
+        public Brush Foreground => IsWarning ? new SolidColorBrush(Microsoft.UI.Colors.OrangeRed) : new SolidColorBrush(Microsoft.UI.Colors.Black);
+        public bool IsWarning { get; set; }
     }
 
     public sealed partial class MainWindow : Window
@@ -260,6 +263,7 @@ namespace Ra2Helper
             Resolutions.SelectedItem = null;
             EnableDisableGridElements(Features, true);
             CheckPlayIntroVideo();
+            AutoSelectResolutionFromIni();
         }
 
         [DllImport("user32.dll")]
@@ -388,6 +392,51 @@ namespace Ra2Helper
                 }
             }
             File.WriteAllLines(iniFile, lines);
+        }
+
+        private string GetResolutionFromIni()
+        {
+            string[] order = ["ra2md.ini", "ra2.ini"];
+            var file = new IniFile();
+            foreach (var ini in order)
+            {
+                var p = gameDir + "\\" + ini;
+                if (!File.Exists(p))
+                {
+                    continue;
+                }
+                file.Load(p);
+                var w = file.GetSetting("Video", "ScreenWidth");
+                var h = file.GetSetting("Video", "ScreenHeight");
+                if (int.TryParse(w, out var wi) && int.TryParse(h, out var hi) && wi > 0 && hi > 0)
+                {
+                    return wi + "x" + hi;
+                }
+            }
+            return null;
+        }
+
+        private void AutoSelectResolutionFromIni()
+        {
+            var res = GetResolutionFromIni();
+            if (string.IsNullOrEmpty(res))
+            {
+                return;
+            }
+            var items = Resolutions.ItemsSource as List<ResolutionItem>;
+            if (items == null)
+            {
+                return;
+            }
+            var found = items.Find(i => i.Text == res);
+            if (found == null)
+            {
+                found = new ResolutionItem { Text = res, IsCorrect = false, IsWarning = true };
+                items.Insert(0, found);
+                Resolutions.ItemsSource = null;
+                Resolutions.ItemsSource = items;
+            }
+            Resolutions.SelectedItem = found;
         }
 
         // click button to fix lan battle program by unzip ipxwrapper.zip from Assets dir to game directory
