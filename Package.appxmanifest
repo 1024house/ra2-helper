@@ -4,13 +4,15 @@
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
   <Identity
     Name="MiHouseTechnologyTianjinC.Ra2Helper"
     Publisher="CN=C2441BA8-D982-408F-9854-8334307E1447"
-    Version="1.6.1.0" />
+    Version="1.7.0.0" />
 
   <mp:PhoneIdentity PhoneProductId="e88742b1-9fff-4d4c-9df3-cc41c6e8dbf2" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
@@ -42,6 +44,16 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"  Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <Extensions>
+        <uap3:Extension Category="windows.appExecutionAlias" Executable="RA2Helper.exe" EntryPoint="Windows.FullTrustApplication">
+          <uap3:AppExecutionAlias>
+            <desktop:ExecutionAlias Alias="ra2helper.exe" />
+            <desktop:ExecutionAlias Alias="redalert2helper.exe" />
+            <desktop:ExecutionAlias Alias="hongjing2zhushou.exe" />
+            <desktop:ExecutionAlias Alias="yurihelper.exe" />
+          </uap3:AppExecutionAlias>
+        </uap3:Extension>
+      </Extensions>
     </Application>
   </Applications>
 
